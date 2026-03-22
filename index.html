@@ -602,12 +602,12 @@ select option{background:var(--bg2);color:#E8F5EE}
 // FIREBASE CONFIG
 // ═══════════════════════════════════════════════════════════════
 const firebaseConfig = {
-  apiKey: "AIzaSyB5CChG4fpJOQQwV4maxqokY3rXJ3HNNNY",
-  authDomain: "presupuestapp-677b0.firebaseapp.com",
-  projectId: "presupuestapp-677b0",
-  storageBucket: "presupuestapp-677b0.firebasestorage.app",
-  messagingSenderId: "156247596187",
-  appId: "1:156247596187:web:da8c2c6f814750f53a7a3e"
+  apiKey: "AIzaSyBHlt0hibxuHzUeYiYcUFbMscLrIr4dGRo",
+  authDomain: "presupuestapp-v18.firebaseapp.com",
+  projectId: "presupuestapp-v18",
+  storageBucket: "presupuestapp-v18.firebasestorage.app",
+  messagingSenderId: "1097536854285",
+  appId: "1:1097536854285:web:e6001ed5919aa069593844"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -635,6 +635,7 @@ const RAMO_COLORS={todos:'#22C585',vial:'#E8830A',civil:'#4A9EE8',electrica:'#D4
 
 let DB=[], APU={}, PRESUPUESTO=[];
 let skipSnapshotUntil = 0; // timestamp — ignora snapshots hasta este momento
+let justClearedPres = false; // evita que config restaure campos vaciados
 let HISTORIAL=[], hayUnsaved=false;
 let ramoActivo='todos', editPid=null, editInsCod=null, editInsIdx=null;
 let logoDataURL=null, currentUser=null, isAdmin=false;
@@ -773,6 +774,7 @@ async function cargarDesdeFirebase(){
         if(d.EMPRESAS){ EMPRESAS=d.EMPRESAS; empresaActivaId=d.empresaActivaId||null; renderEmpresasSel(); if(empresaActivaId)cargarEmpresa(); }
         if(d.config){
           setTimeout(()=>{
+            if(justClearedPres){justClearedPres=false;return;}// no restaurar si acabamos de limpiar
             if(d.config.pNombre)document.getElementById('p-nombre').value=d.config.pNombre;
             if(d.config.pCliente)document.getElementById('p-cliente').value=d.config.pCliente;
             if(d.config.pUbic)document.getElementById('p-ubic').value=d.config.pUbic;
@@ -1804,6 +1806,7 @@ async function guardarPresupuestoActual(){
 
   // Ignorar snapshots por 4 segundos para que no pisen el vaciado
   skipSnapshotUntil = Date.now() + 4000;
+  justClearedPres = true;
   marcarUnsaved();
   await guardarFirebase();
   notif('✓ Presupuesto N°' + nroActual + ' "' + nuevo.nombre + '" guardado');

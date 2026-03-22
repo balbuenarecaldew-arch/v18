@@ -634,6 +634,7 @@ let CAPS=[
 const RAMO_COLORS={todos:'#22C585',vial:'#E8830A',civil:'#4A9EE8',electrica:'#D4AC0D',sanitaria:'#22C585',hvac:'#A78BFA',acabados:'#F472B6'};
 
 let DB=[], APU={}, PRESUPUESTO=[];
+let skipNextSnapshot = false; // evita que onSnapshot pise el vaciado tras guardar
 let HISTORIAL=[], hayUnsaved=false;
 let ramoActivo='todos', editPid=null, editInsCod=null, editInsIdx=null;
 let logoDataURL=null, currentUser=null, isAdmin=false;
@@ -756,11 +757,19 @@ async function cargarDesdeFirebase(){
   try{
     // Escuchar cambios en tiempo real
     db.collection('datos').doc('base').onSnapshot(snap=>{
+      if(skipNextSnapshot){ skipNextSnapshot=false; setSyncStatus(false); return; }
       if(snap.exists){
         const d=snap.data();
         DB=d.DB||[]; APU=d.APU||{}; PRESUPUESTO=d.PRESUPUESTO||[];
         if(d.CAPS && d.CAPS.length) CAPS = d.CAPS;
-        if(d.PRESUPUESTOS_GUARDADOS) PRESUPUESTOS_GUARDADOS = d.PRESUPUESTOS_GUARDADOS;
+        if(d.PRESUPUESTOS_GUARDADOS) {
+          PRESUPUESTOS_GUARDADOS = d.PRESUPUESTOS_GUARDADOS;
+          // Auto-completar N° siguiente si el campo está vacío
+          const nroEl = document.getElementById('p-nro');
+          if(nroEl && !nroEl.value){
+            nroEl.value = (PRESUPUESTOS_GUARDADOS.length + 1).toString().padStart(4,'0');
+          }
+        }
         if(d.EMPRESAS){ EMPRESAS=d.EMPRESAS; empresaActivaId=d.empresaActivaId||null; renderEmpresasSel(); if(empresaActivaId)cargarEmpresa(); }
         if(d.config){
           setTimeout(()=>{
@@ -1748,11 +1757,15 @@ async function guardarPresupuestoActual(){
   const confirmado = confirm(`¿Guardar el presupuesto "${nombre}" en el archivo?\n\nVas a poder editarlo y reabrirlo cuando quieras.`);
   if(!confirmado) return;
 
+  // Número correlativo automático
+  const nextNro = (PRESUPUESTOS_GUARDADOS.length + 1).toString().padStart(4,'0');
+  const nroActual = document.getElementById('p-nro').value || nextNro;
+
   const nuevo = {
     id: 'pres_' + Date.now(),
     nombre: document.getElementById('p-nombre').value,
     cliente: document.getElementById('p-cliente').value,
-    nro: document.getElementById('p-nro').value,
+    nro: nroActual,
     fecha: document.getElementById('p-fecha').value,
     items: JSON.parse(JSON.stringify(PRESUPUESTO)),
     guardadoPor: currentUser?.email || '—',
@@ -1762,26 +1775,25 @@ async function guardarPresupuestoActual(){
       pCliente: document.getElementById('p-cliente').value,
       pUbic: document.getElementById('p-ubic').value,
       pResp: document.getElementById('p-resp').value,
-      pNro: document.getElementById('p-nro').value,
+      pNro: nroActual,
       pFecha: document.getElementById('p-fecha').value,
       pctGi: document.getElementById('pct-gi').value,
       pctBi: document.getElementById('pct-bi').value,
       pctIva: document.getElementById('pct-iva').value,
     }
   };
-  PRESUPUESTOS_GUARDADOS.unshift(nuevo); // más reciente primero
+  PRESUPUESTOS_GUARDADOS.unshift(nuevo);
   presupuestoActivoGuardadoId = null;
-  marcarUnsaved();
-  await guardarFirebase();
 
-  // Limpiar el presupuesto activo y dashboard
+  // Limpiar ANTES de guardar para que Firebase no nos los devuelva
   PRESUPUESTO = [];
-  ['p-nombre','p-cliente','p-ubic','p-resp','p-nro'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.value = '';
+  ['p-nombre','p-cliente','p-ubic','p-resp'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
   });
+  // N° siguiente correlativo automático
+  const siguienteNro = (PRESUPUESTOS_GUARDADOS.length + 1).toString().padStart(4,'0');
+  document.getElementById('p-nro').value = siguienteNro;
   document.getElementById('p-fecha').value = new Date().toISOString().split('T')[0];
-  // Resetear porcentajes a default
   document.getElementById('pct-gi').value = '13';
   document.getElementById('pct-bi').value = '6';
   document.getElementById('pct-iva').value = '10';
@@ -1789,7 +1801,12 @@ async function guardarPresupuestoActual(){
   renderBD();
   recalcResumen();
   renderGuardados();
-  notif('✓ Presupuesto "' + nuevo.nombre + '" guardado — panel limpio');
+
+  // Saltar el próximo onSnapshot para que no pise el vaciado
+  skipNextSnapshot = true;
+  marcarUnsaved();
+  await guardarFirebase();
+  notif('✓ Presupuesto N°' + nroActual + ' "' + nuevo.nombre + '" guardado');
 }
 
 function abrirPresupuestoGuardado(idx){

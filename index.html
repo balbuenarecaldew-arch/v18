@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PresupuestAPP</title>
 <!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -636,8 +637,9 @@ let CAPS=[
 const RAMO_COLORS={todos:'#22C585',vial:'#E8830A',civil:'#4A9EE8',electrica:'#D4AC0D',sanitaria:'#22C585',hvac:'#A78BFA',acabados:'#F472B6'};
 
 let DB=[], APU={}, PRESUPUESTO=[];
-let skipSnapshotUntil = 0; // timestamp — ignora snapshots hasta este momento
-let justClearedPres = false; // evita que config restaure campos vaciados
+let skipSnapshotUntil = 0;
+let justClearedPres = false;
+let initialLoadDone = false; // solo restaura config en primer load
 let HISTORIAL=[], hayUnsaved=false;
 let ramoActivo='todos', editPid=null, editInsCod=null, editInsIdx=null;
 let logoDataURL=null, currentUser=null, isAdmin=false;
@@ -760,10 +762,11 @@ async function cargarDesdeFirebase(){
   try{
     // Escuchar cambios en tiempo real
     db.collection('datos').doc('base').onSnapshot(snap=>{
-      if(Date.now() < skipSnapshotUntil){ setSyncStatus(false); return; }
+      // snapshot always runs — config only restores on first load
       if(snap.exists){
         const d=snap.data();
-        DB=d.DB||[]; APU=d.APU||{}; PRESUPUESTO=d.PRESUPUESTO||[];
+        DB=d.DB||[]; APU=d.APU||{};
+        if(!initialLoadDone) PRESUPUESTO=d.PRESUPUESTO||[]; // solo en primer load
         if(d.CAPS && d.CAPS.length) CAPS = d.CAPS;
         if(d.PRESUPUESTOS_GUARDADOS) {
           PRESUPUESTOS_GUARDADOS = d.PRESUPUESTOS_GUARDADOS;
@@ -774,9 +777,8 @@ async function cargarDesdeFirebase(){
           }
         }
         if(d.EMPRESAS){ EMPRESAS=d.EMPRESAS; empresaActivaId=d.empresaActivaId||null; renderEmpresasSel(); if(empresaActivaId)cargarEmpresa(); }
-        if(d.config){
+        if(d.config && !initialLoadDone){
           setTimeout(()=>{
-            if(justClearedPres){justClearedPres=false;return;}// no restaurar si acabamos de limpiar
             if(d.config.pNombre)document.getElementById('p-nombre').value=d.config.pNombre;
             if(d.config.pCliente)document.getElementById('p-cliente').value=d.config.pCliente;
             if(d.config.pUbic)document.getElementById('p-ubic').value=d.config.pUbic;
@@ -798,6 +800,7 @@ async function cargarDesdeFirebase(){
         }
         if(document.getElementById("tab-bd").classList.contains("active"))renderBD();
         renderPres();
+        initialLoadDone = true;
         if(DB.length) notif('✓ Datos sincronizados — '+DB.length+' partidas');
       } else {
         // Primera vez — cargar datos iniciales de ejemplo

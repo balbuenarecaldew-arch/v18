@@ -250,11 +250,12 @@ tr:hover td{background:rgba(255,255,255,.02)}
   text-transform:uppercase;letter-spacing:.05em;border-left:3px solid
 }
 .num{text-align:right;font-family:'DM Mono',monospace}
-/* Doc table (blanco para imprimir) */
-.doc-table td{color:#111!important;background:#fff}
-.doc-table tr:nth-child(even) td{background:#f4f9f6!important;color:#111!important}
-.doc-table th{color:#fff!important;background:#1B4432!important;top:0!important;z-index:0!important}
-.doc-cap-row td{background:#2A5C42!important;color:#fff!important;font-weight:700}
+/* Doc table (limpio para imprimir) */
+.doc-table{border-collapse:collapse;width:100%}
+.doc-table td{color:#111!important;background:#fff!important;border-bottom:1px solid #e8e8e8;font-size:9pt}
+.doc-table tr:nth-child(even) td{background:#fafafa!important;color:#111!important}
+.doc-table th{color:#1B4432!important;background:#f0f7f3!important;font-weight:700;border-bottom:2px solid #1B4432;top:0!important;z-index:0!important;font-size:8.5pt;text-transform:uppercase;letter-spacing:.04em}
+.doc-cap-row td{background:#e8f4ef!important;color:#1B4432!important;font-weight:700;border-left:3px solid #1B4432;border-bottom:1px solid #c5ddd4!important}
 
 /* ═══ FORMS ═══════════════════════════════════════════════════ */
 .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px;margin-bottom:12px}
@@ -453,25 +454,12 @@ select option{background:var(--bg2);color:var(--txt)}
 @media print{
   body{background:#fff!important;color:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .topbar,.tabs,.ramos-bar,.notif,.modal-bg,#login-screen,.view,#offline-banner,#inactivity-warning,#autosave-info{display:none!important}
-  #print-output{display:block!important}
+  #print-output{display:block!important;background:#fff!important}
   @page{margin:1.5cm;size:A4}
-  /* Filas de capítulo: fondo verde oscuro con texto blanco */
-  .doc-cap-row td{background:#2A5C42!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  /* Encabezados de tabla: fondo verde oscuro con texto blanco */
-  .doc-table th{background:#1B4432!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  /* Filas normales: fondo blanco puro con texto negro */
-  .doc-table td{background:#fff!important;color:#111!important}
-  .doc-table tr:nth-child(even) td{background:#f5faf7!important;color:#111!important}
-  /* Fila total: verde oscuro */
+  .doc-table th{background:#f0f7f3!important;color:#1B4432!important;border-bottom:2px solid #1B4432!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .doc-cap-row td{background:#e8f4ef!important;color:#1B4432!important;border-left:3px solid #1B4432!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .doc-table tr:last-child td{background:#1B4432!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  /* APU encabezado */
   .doc-apu-header{background:#1B4432!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .doc-apu-total td{background:#2A7A55!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  /* Total en letras */
-  #print-output div[style*="border"]{background:#f5faf7!important;border-color:#ccc!important}
-  /* Asegurar que todo el texto sea negro sobre blanco */
-  #print-output{background:#fff!important;color:#111!important}
-  #print-output *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
 </head>
@@ -2164,14 +2152,14 @@ function generarDocHTML(){
         </tr>`;
       });
     });
-    html+=`<tr style="background:#1B4432;color:#fff">
-      <td colspan="5" style="text-align:right;font-weight:700;font-size:10pt;padding:8px 8px">TOTAL GENERAL DE OBRA</td>
-      <td style="text-align:right;font-weight:700;font-size:11pt;padding:8px 8px">${fmtP(totalGeneral)}</td>
+    html+=`<tr style="background:#1B4432;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact">
+      <td colspan="5" style="text-align:right;font-weight:700;font-size:10pt;padding:9px 8px;color:#fff!important">TOTAL GENERAL DE OBRA</td>
+      <td style="text-align:right;font-weight:700;font-size:12pt;padding:9px 8px;color:#fff!important">${fmtP(totalGeneral)}</td>
     </tr></tbody></table>`;
   }
   if(SECC_STATE['sec-letras']){
-    html+=`<div style="border:1px solid #ccc;border-radius:5px;padding:9px 13px;margin-top:8px;background:#f9f9f9">
-      <span style="font-size:8pt;color:#666;font-weight:700;text-transform:uppercase;letter-spacing:.04em">Son: </span>
+    html+=`<div style="border:1px solid #c5ddd4;border-radius:5px;padding:9px 13px;margin-top:8px;background:#f0f7f3">
+      <span style="font-size:8pt;color:#1B4432;font-weight:700;text-transform:uppercase;letter-spacing:.04em">Son: </span>
       <span style="font-size:9pt;color:#1B4432;font-weight:700">${numeroALetras(totalGeneral)} GUARANÍES</span>
     </div>`;
   }
@@ -2183,21 +2171,58 @@ function generarDocHTML(){
     html+=`<h3 style="font-size:11pt;color:#1B4432;margin:14px 0 7px;border-bottom:2px solid #1B4432;padding-bottom:3px">Resumen por Capítulo</h3>
     <table class="doc-table"><thead><tr><th>Cap.</th><th>Capítulo</th><th style="text-align:right">Total ₲</th><th style="text-align:right">% Obra</th></tr></thead><tbody>`;
     Object.keys(byCap).sort().forEach(cid=>{const cap=capOf(cid);const pct=totalGeneral>0?(byCap[cid]/totalGeneral*100).toFixed(1):0;html+=`<tr><td><strong>${cid}</strong></td><td>${cap.name}</td><td style="text-align:right;font-weight:700">${fmtP(byCap[cid])}</td><td style="text-align:right">${pct}%</td></tr>`;});
-    html+=`<tr style="background:#1B4432;color:#fff"><td colspan="2" style="text-align:right;font-weight:700">TOTAL</td><td style="text-align:right;font-weight:700">${fmtP(totalGeneral)}</td><td style="text-align:right">100%</td></tr></tbody></table>`;
+    html+=`<tr style="background:#1B4432;color:#fff;-webkit-print-color-adjust:exact"><td colspan="2" style="text-align:right;font-weight:700;color:#fff!important">TOTAL</td><td style="text-align:right;font-weight:700;color:#fff!important">${fmtP(totalGeneral)}</td><td style="text-align:right;color:#fff!important">100%</td></tr></tbody></table>`;
   }
   if(SECC_STATE['sec-apu']){
     const lista=PRESUPUESTO.map(it=>DB.find(x=>x.id===it.pid)).filter(p=>p&&APU[p.cod.replace('.','_')]&&APU[p.cod.replace('.','_')].length);
     if(lista.length){
       html+=`<h3 style="font-size:11pt;color:#1B4432;margin:14px 0 7px;border-bottom:2px solid #1B4432;padding-bottom:3px">Análisis de Precios Unitarios</h3>`;
       lista.forEach(p=>{
-        const ins=APU[p.cod.replace('.','_')]; const totalIns=ins.reduce((a,i)=>a+i.qty*i.pu,0);
-        html+=`<div class="doc-apu-item"><div class="doc-apu-header"><span>${p.cod} — ${p.desc}</span><span>${p.u} | ${fmtP(pu(p))}</span></div>
-        <table class="doc-table"><thead><tr><th>Tipo</th><th>Descripción</th><th>Ud.</th><th style="text-align:right">Cant.</th><th style="text-align:right">P.Unit ₲</th><th style="text-align:right">Subtotal ₲</th><th style="text-align:right">%</th></tr></thead><tbody>`;
-        ins.forEach(i=>{const st=i.qty*i.pu;const pct=totalIns>0?(st/totalIns*100).toFixed(1):0;const tc={'M':'Material','L':'Mano Obra','E':'Equipo'}[i.tipo]||i.tipo;html+=`<tr><td>${tc}</td><td>${i.desc}</td><td style="text-align:center">${i.u}</td><td style="text-align:right">${i.qty%1===0?i.qty:i.qty.toFixed(3)}</td><td style="text-align:right">${fmtP(i.pu)}</td><td style="text-align:right;font-weight:700">${fmtP(st)}</td><td style="text-align:right">${pct}%</td></tr>`;});
-        html+=`<tr class="doc-apu-total"><td colspan="5" style="text-align:right">PRECIO UNITARIO BASE</td><td style="text-align:right">${fmtP(pu(p))}</td><td></td></tr></tbody></table></div>`;
-      });
-    }
-  }
+        const ins=APU[p.cod.replace('.','_')];
+        const totalIns=ins.reduce((a,i)=>a+i.qty*i.pu,0);
+        const matT=ins.filter(i=>i.tipo==='M').reduce((a,i)=>a+i.qty*i.pu,0);
+        const moT =ins.filter(i=>i.tipo==='L').reduce((a,i)=>a+i.qty*i.pu,0);
+        const eqT =ins.filter(i=>i.tipo==='E').reduce((a,i)=>a+i.qty*i.pu,0);
+        // Encabezado de la partida
+        html+=`<div style="margin-bottom:14px;border:1px solid #ddd;border-radius:6px;overflow:hidden;page-break-inside:avoid">
+          <div style="background:#1B4432;color:#fff;padding:6px 12px;display:flex;justify-content:space-between;align-items:center;-webkit-print-color-adjust:exact;print-color-adjust:exact">
+            <span style="font-weight:700;font-size:9pt;color:#fff">${p.cod} — ${p.desc}</span>
+            <span style="font-size:8.5pt;background:rgba(255,255,255,.15);padding:2px 8px;border-radius:4px;color:#fff">Unidad: ${p.u} &nbsp;|&nbsp; P.Unit: ${fmtP(pu(p))}</span>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:8.5pt">
+            <thead><tr style="background:#f0f7f3;-webkit-print-color-adjust:exact">
+              <th style="padding:5px 10px;text-align:left;color:#1B4432;border-bottom:1px solid #c5ddd4;width:60px">Tipo</th>
+              <th style="padding:5px 10px;text-align:left;color:#1B4432;border-bottom:1px solid #c5ddd4">Descripción del insumo</th>
+              <th style="padding:5px 10px;text-align:center;color:#1B4432;border-bottom:1px solid #c5ddd4;width:35px">Ud.</th>
+              <th style="padding:5px 10px;text-align:right;color:#1B4432;border-bottom:1px solid #c5ddd4;width:60px">Cant.</th>
+              <th style="padding:5px 10px;text-align:right;color:#1B4432;border-bottom:1px solid #c5ddd4;width:90px">P.Unit ₲</th>
+              <th style="padding:5px 10px;text-align:right;color:#1B4432;border-bottom:1px solid #c5ddd4;width:90px">Subtotal ₲</th>
+            </tr></thead>
+            <tbody>`;
+        // Filas de insumos agrupadas por tipo
+        const tiposOrden=[['M','Material','#e8f2ff'],['L','Mano de Obra','#e8f9f3'],['E','Equipo','#fffae8']];
+        tiposOrden.forEach(([tipo,tipoLabel,bg])=>{
+          const grupo=ins.filter(i=>i.tipo===tipo); if(!grupo.length) return;
+          html+=`<tr style="background:${bg};-webkit-print-color-adjust:exact"><td colspan="6" style="padding:3px 10px;font-size:7.5pt;font-weight:700;color:#555;letter-spacing:.04em;text-transform:uppercase">${tipoLabel}</td></tr>`;
+          grupo.forEach(i=>{
+            const st=i.qty*i.pu;
+            html+=`<tr><td style="padding:4px 10px;color:#666;font-size:8pt"></td><td style="padding:4px 10px;color:#111">${i.desc}</td><td style="padding:4px 10px;text-align:center;color:#555">${i.u}</td><td style="padding:4px 10px;text-align:right;color:#111">${i.qty%1===0?i.qty:i.qty.toFixed(3)}</td><td style="padding:4px 10px;text-align:right;color:#111">${fmtP(i.pu)}</td><td style="padding:4px 10px;text-align:right;font-weight:600;color:#111">${fmtP(st)}</td></tr>`;
+          });
+        });
+        // Fila de totales por tipo y total general
+        html+=`<tr style="background:#f5f5f5;border-top:1px solid #ddd">
+          <td colspan="4" style="padding:5px 10px;font-size:8pt;color:#555">
+            ${matT>0?`<span style="margin-right:12px">Mat: ${fmtP(matT)}</span>`:''}
+            ${moT>0?`<span style="margin-right:12px">M.O: ${fmtP(moT)}</span>`:''}
+            ${eqT>0?`<span>Eq: ${fmtP(eqT)}</span>`:''}
+          </td>
+          <td style="padding:5px 10px;text-align:right;font-size:8pt;font-weight:700;color:#1B4432">P. UNITARIO</td>
+          <td style="padding:5px 10px;text-align:right;font-weight:700;font-size:10pt;color:#1B4432">${fmtP(pu(p))}</td>
+        </tr>
+        </tbody></table></div>`;
+      }); // fin lista.forEach
+    }   // fin if lista.length
+  }     // fin if sec-apu
   if(SECC_STATE['sec-condiciones']){
     html+=`<h3 style="font-size:11pt;color:#1B4432;margin:14px 0 7px;border-bottom:2px solid #1B4432;padding-bottom:3px">Condiciones Generales</h3>
     <table style="width:100%;border-collapse:collapse;font-size:9pt;border:1px solid #ddd">

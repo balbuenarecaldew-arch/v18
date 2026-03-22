@@ -197,7 +197,7 @@ body{font-family:var(--font);font-size:14px;color:var(--txt);background:var(--bg
 .tab.active{color:var(--acento);border-bottom-color:var(--acento)}
 
 /* ═══ VIEWS ═══════════════════════════════════════════════════ */
-.view{display:none;padding:18px;max-width:1600px;margin:0 auto;animation:viewFadeIn .2s ease}
+.view{display:none;padding:18px;width:100%;box-sizing:border-box;animation:viewFadeIn .2s ease}
 @keyframes viewFadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 .view.active{display:block}
 
@@ -241,7 +241,7 @@ th{
   position:sticky;top:0;z-index:5
 }
 /* Tabla dentro de tbl-wrap con altura fija: encabezado sticky funciona dentro del scroll container */
-.tbl-wrap-fixed{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 260px)}
+.tbl-wrap-fixed{overflow-x:auto}
 .tbl-wrap-fixed th{position:sticky;top:0;z-index:5}
 td{padding:7px 12px;border-bottom:1px solid var(--borde);vertical-align:middle;font-size:13px;color:var(--txt)}
 tr:hover td{background:rgba(255,255,255,.02)}
@@ -912,12 +912,12 @@ select option{background:var(--bg2);color:var(--txt)}
 // FIREBASE CONFIG
 // ═══════════════════════════════════════════════════════════════
 const firebaseConfig = {
-  apiKey: "AIzaSyB5CChG4fpJOQQwV4maxqokY3rXJ3HNNNY",
-  authDomain: "presupuestapp-677b0.firebaseapp.com",
-  projectId: "presupuestapp-677b0",
-  storageBucket: "presupuestapp-677b0.firebasestorage.app",
-  messagingSenderId: "156247596187",
-  appId: "1:156247596187:web:da8c2c6f814750f53a7a3e"
+  apiKey: "AIzaSyBHlt0hibxuHzUeYiYcUFbMscLrIr4dGRo",
+  authDomain: "presupuestapp-v18.firebaseapp.com",
+  projectId: "presupuestapp-v18",
+  storageBucket: "presupuestapp-v18.firebasestorage.app",
+  messagingSenderId: "1097536854285",
+  appId: "1:1097536854285:web:e6001ed5919aa069593844"
 };
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
@@ -955,7 +955,8 @@ let appAbierta = false;
 let SECC_STATE = {};
 let _importData = [];
 let dashCharts = {};
-let _ignorarProximoSnapshotPres = false;
+let _ignorarProximoSnapshotPres = 0; // timestamp — ignorar snapshots hasta este momento
+let _initialLoadDone = false; // solo restaurar config en primer load
 
 // Helpers
 const pu  = p => (p.mat||0)+(p.mo||0)+(p.eq||0)+(p.sub||0);
@@ -1201,9 +1202,8 @@ async function cargarDesdeFirebase(){
         const d = snap.data();
         DB = d.DB||[]; APU = d.APU||{};
         // Solo actualizar PRESUPUESTO desde Firebase si no estamos en medio de un vaciado intencional
-        if(_ignorarProximoSnapshotPres){
-          _ignorarProximoSnapshotPres = false;
-          // Mantener PRESUPUESTO vacío — no pisar con los datos recién guardados
+        if(Date.now() < _ignorarProximoSnapshotPres){
+          // Ignorar este snapshot — acabamos de vaciar el presupuesto
         } else {
           PRESUPUESTO = d.PRESUPUESTO||[];
         }
@@ -1216,7 +1216,7 @@ async function cargarDesdeFirebase(){
         }
         if(d.PRESUPUESTOS_GUARDADOS) PRESUPUESTOS_GUARDADOS = d.PRESUPUESTOS_GUARDADOS;
         if(d.EMPRESAS){ EMPRESAS=d.EMPRESAS; empresaActivaId=d.empresaActivaId||null; renderEmpresasSel(); if(empresaActivaId) cargarEmpresa(); }
-        if(d.config){
+        if(d.config && !_initialLoadDone){
           setTimeout(() => {
             const c = d.config;
             if(c.pNombre) document.getElementById('p-nombre').value = c.pNombre;
@@ -1232,7 +1232,7 @@ async function cargarDesdeFirebase(){
           }, 100);
         }
         renderBD(); renderPres();
-        // Pequeño delay para asegurar que el DOM del dashboard esté listo
+        _initialLoadDone = true;
         setTimeout(()=>renderDashboard(), 50);
         guardarCacheLocal();
         if(DB.length) notif('✓ Datos sincronizados — ' + DB.length + ' partidas');
@@ -2491,7 +2491,7 @@ async function guardarPresupuestoActual(){
   document.getElementById('p-fecha').value=new Date().toISOString().split('T')[0];
 
   // Guardar en Firebase con flag para ignorar el próximo snapshot de PRESUPUESTO
-  _ignorarProximoSnapshotPres = true;
+  _ignorarProximoSnapshotPres = Date.now() + 5000; // ignorar snapshots por 5 segundos
   await guardarFirebase();
 
   renderPres(); renderBD(); renderGuardados(); setTimeout(()=>renderDashboard(),50);

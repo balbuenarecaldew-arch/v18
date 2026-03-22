@@ -21,10 +21,12 @@
   --radio:10px; --sombra:0 4px 20px rgba(0,0,0,.6);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;color:var(--txt);background:var(--bg0);min-height:100vh}
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:var(--bg1)}
-::-webkit-scrollbar-thumb{background:var(--borde2);border-radius:3px}
+body{font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;color:var(--txt);background:var(--bg0);min-height:100vh;margin:0;padding:0;overflow-x:hidden}
+::-webkit-scrollbar{width:12px;height:12px}
+::-webkit-scrollbar-track{background:var(--bg2);border-radius:6px}
+::-webkit-scrollbar-thumb{background:#555;border-radius:6px;border:3px solid var(--bg2)}
+::-webkit-scrollbar-thumb:hover{background:#888}
+::-webkit-scrollbar-corner{background:var(--bg2)}
 
 /* ═══ LOGIN SCREEN ════════════════════════════════════════════ */
 #login-screen{
@@ -59,7 +61,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;color:var(--txt)
 .login-logo{font-size:40px;margin-bottom:16px}
 
 /* ═══ TOPBAR ══════════════════════════════════════════════════ */
-#app{display:none}
+#app{display:none;width:100%;min-height:100vh}
 .topbar{background:var(--bg1);border-bottom:1px solid var(--borde);display:flex;align-items:center;gap:12px;padding:0 20px;height:56px;position:sticky;top:0;z-index:100;box-shadow:var(--sombra)}
 .topbar h1{font-size:15px;font-weight:700;color:var(--acento);flex:1}
 .user-info{font-size:12px;color:var(--txt3);display:flex;align-items:center;gap:8px}
@@ -91,11 +93,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;color:var(--txt)
 .tab.active{color:var(--acento);border-bottom-color:var(--acento)}
 
 /* ═══ VIEWS ═══════════════════════════════════════════════════ */
-.view{display:none;padding:20px;max-width:1500px;margin:0 auto}
-.view.active{display:block}
+.view{display:none;padding:24px;width:100%;box-sizing:border-box}
+.view.active{display:block;width:100%;min-height:calc(100vh - 200px)}
 
 /* ═══ CARDS ═══════════════════════════════════════════════════ */
-.card{background:var(--bg1);border-radius:var(--radio);border:1px solid var(--borde);box-shadow:var(--sombra);margin-bottom:16px}
+.card{background:var(--bg1);border-radius:var(--radio);border:1px solid var(--borde);box-shadow:var(--sombra);margin-bottom:16px;width:100%}
 .card-header{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--borde);background:var(--bg2);border-radius:var(--radio) var(--radio) 0 0;flex-wrap:wrap;gap:8px}
 .card-header h2{font-size:13px;font-weight:700;color:var(--acento)}
 .card-body{padding:16px}
@@ -282,9 +284,9 @@ select option{background:var(--bg2);color:#E8F5EE}
   <div class="tabs">
     <div class="tab active" onclick="showTab('bd',this)">📋 Base de Datos</div>
     <div class="tab" onclick="showTab('apu',this)">🔍 Análisis Precio Unitario</div>
-    <div class="tab" onclick="showTab('pres',this)">📊 Presupuesto Activo</div>
+    <div class="tab" onclick="showTab('pres',this)">📋 Presupuesto Activo</div>
     <div class="tab" onclick="showTab('guardados',this)">🗂 Presupuestos Guardados</div>
-    <div class="tab" onclick="showTab('resumen',this)">📈 Resumen</div>
+    <div class="tab" onclick="showTab('resumen',this)">📈 Dashboard</div>
     <div class="tab" onclick="showTab('imprimir',this)">🖨 Imprimir</div>
     <div class="tab" id="tab-admin-btn" style="display:none" onclick="showTab('admin',this)">⚡ Usuarios</div>
   </div>

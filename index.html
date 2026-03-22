@@ -458,7 +458,7 @@ select option{background:var(--bg2);color:var(--txt)}
   @page{margin:1.5cm;size:A4}
   .doc-table th{background:#f0f7f3!important;color:#1B4432!important;border-bottom:2px solid #1B4432!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .doc-cap-row td{background:#e8f4ef!important;color:#1B4432!important;border-left:3px solid #1B4432!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .doc-table tr:last-child td{background:#1B4432!important;color:#fff!important;border-top:3px solid #0d2b1f!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .doc-table tr:last-child td{background:#fff!important;color:#111!important;border-top:3px solid #1B4432!important;border-bottom:2px solid #1B4432!important}
   .doc-apu-header{background:#1B4432!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
@@ -2159,8 +2159,8 @@ function generarDocHTML(){
       });
     });
     html+=`<tr>
-      <td colspan="5" style="text-align:right;font-weight:700;font-size:10pt;padding:10px 8px;color:#fff!important;background:#1B4432!important;border-top:3px solid #0d2b1f">TOTAL GENERAL DE OBRA</td>
-      <td style="text-align:right;font-weight:700;font-size:13pt;padding:10px 8px;color:#fff!important;background:#1B4432!important;border-top:3px solid #0d2b1f">${fmtP(totalGeneral)}</td>
+      <td colspan="5" style="text-align:right;font-weight:700;font-size:10pt;padding:10px 8px;color:#111!important;background:#fff!important;border-top:3px solid #1B4432;border-bottom:2px solid #1B4432">TOTAL GENERAL DE OBRA</td>
+      <td style="text-align:right;font-weight:700;font-size:13pt;padding:10px 8px;color:#1B4432!important;background:#fff!important;border-top:3px solid #1B4432;border-bottom:2px solid #1B4432">${fmtP(totalGeneral)}</td>
     </tr></tbody></table>`;
   }
   if(SECC_STATE['sec-letras']){
@@ -2177,7 +2177,7 @@ function generarDocHTML(){
     html+=`<h3 style="font-size:11pt;color:#1B4432;margin:14px 0 7px;border-bottom:2px solid #1B4432;padding-bottom:3px">Resumen por Capítulo</h3>
     <table class="doc-table"><thead><tr><th>Cap.</th><th>Capítulo</th><th style="text-align:right">Total ₲</th><th style="text-align:right">% Obra</th></tr></thead><tbody>`;
     Object.keys(byCap).sort().forEach(cid=>{const cap=capOf(cid);const pct=totalGeneral>0?(byCap[cid]/totalGeneral*100).toFixed(1):0;html+=`<tr><td><strong>${cid}</strong></td><td>${cap.name}</td><td style="text-align:right;font-weight:700">${fmtP(byCap[cid])}</td><td style="text-align:right">${pct}%</td></tr>`;});
-    html+=`<tr><td colspan="2" style="text-align:right;font-weight:700;color:#fff!important;background:#1B4432!important;padding:8px;border-top:3px solid #0d2b1f">TOTAL</td><td style="text-align:right;font-weight:700;color:#fff!important;background:#1B4432!important;padding:8px;border-top:3px solid #0d2b1f">${fmtP(totalGeneral)}</td><td style="text-align:right;color:#fff!important;background:#1B4432!important;padding:8px;border-top:3px solid #0d2b1f">100%</td></tr></tbody></table>`;
+    html+=`<tr><td colspan="2" style="text-align:right;font-weight:700;color:#111!important;background:#fff!important;padding:8px;border-top:3px solid #1B4432">TOTAL</td><td style="text-align:right;font-weight:700;color:#1B4432!important;background:#fff!important;padding:8px;border-top:3px solid #1B4432">${fmtP(totalGeneral)}</td><td style="text-align:right;color:#111!important;background:#fff!important;padding:8px;border-top:3px solid #1B4432">100%</td></tr></tbody></table>`;
   }
   if(SECC_STATE['sec-apu']){
     const lista=PRESUPUESTO.map(it=>DB.find(x=>x.id===it.pid)).filter(p=>p&&APU[p.cod.replace('.','_')]&&APU[p.cod.replace('.','_')].length);

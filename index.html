@@ -31,9 +31,9 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:var(--font);font-size:14px;color:var(--txt);background:var(--bg0);min-height:100vh;-webkit-font-smoothing:antialiased}
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--borde2);border-radius:99px}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-track{background:var(--bg1)}
+::-webkit-scrollbar-thumb{background:var(--borde2);border-radius:99px;border:2px solid var(--bg1)}
 ::-webkit-scrollbar-thumb:hover{background:var(--txt3)}
 
 /* ═══ OFFLINE BANNER ═══════════════════════════════════════════ */
@@ -455,8 +455,23 @@ select option{background:var(--bg2);color:var(--txt)}
   .topbar,.tabs,.ramos-bar,.notif,.modal-bg,#login-screen,.view,#offline-banner,#inactivity-warning,#autosave-info{display:none!important}
   #print-output{display:block!important}
   @page{margin:1.5cm;size:A4}
-  .doc-cap-row td{background:#2A5C42!important;color:#fff!important;-webkit-print-color-adjust:exact}
-  .doc-table th{background:#1B4432!important;color:#fff!important;-webkit-print-color-adjust:exact}
+  /* Filas de capítulo: fondo verde oscuro con texto blanco */
+  .doc-cap-row td{background:#2A5C42!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  /* Encabezados de tabla: fondo verde oscuro con texto blanco */
+  .doc-table th{background:#1B4432!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  /* Filas normales: fondo blanco puro con texto negro */
+  .doc-table td{background:#fff!important;color:#111!important}
+  .doc-table tr:nth-child(even) td{background:#f5faf7!important;color:#111!important}
+  /* Fila total: verde oscuro */
+  .doc-table tr:last-child td{background:#1B4432!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  /* APU encabezado */
+  .doc-apu-header{background:#1B4432!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .doc-apu-total td{background:#2A7A55!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  /* Total en letras */
+  #print-output div[style*="border"]{background:#f5faf7!important;border-color:#ccc!important}
+  /* Asegurar que todo el texto sea negro sobre blanco */
+  #print-output{background:#fff!important;color:#111!important}
+  #print-output *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
 </head>
@@ -636,14 +651,21 @@ select option{background:var(--bg2);color:var(--txt)}
             <th class="num" style="color:var(--acento)">P. Unitario ₲</th>
             <th class="num" style="width:130px">Cantidad</th>
             <th class="num" style="color:var(--acento)">Total ₲</th>
+            <th class="num" style="color:var(--amarillo);white-space:nowrap">c/ GI+B+IVA ₲</th>
             <th style="width:50px"></th>
           </tr></thead>
           <tbody id="pres-tbody"></tbody>
         </table>
       </div>
-      <div style="display:flex;justify-content:flex-end;align-items:center;gap:12px;padding:12px 16px;background:var(--bg2);border-top:1px solid var(--borde)">
-        <span style="font-size:12px;color:var(--txt3)">Costo directo:</span>
-        <span id="pres-cd" style="font-size:20px;font-weight:700;color:var(--acento);font-family:'DM Mono',monospace">₲ 0</span>
+      <div style="display:flex;justify-content:flex-end;align-items:center;gap:20px;padding:12px 16px;background:var(--bg2);border-top:1px solid var(--borde);flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px;color:var(--txt3)">Costo directo:</span>
+          <span id="pres-cd" style="font-size:18px;font-weight:700;color:var(--acento);font-family:'DM Mono',monospace">₲ 0</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding-left:20px;border-left:1px solid var(--borde)">
+          <span style="font-size:12px;color:var(--txt3)">Con GI+B+IVA <span id="pres-factor-label" style="color:var(--amarillo);font-size:10px;font-weight:700"></span>:</span>
+          <span id="pres-total" style="font-size:18px;font-weight:700;color:var(--amarillo);font-family:'DM Mono',monospace">₲ 0</span>
+        </div>
       </div>
     </div>
   </div>
@@ -672,11 +694,11 @@ select option{background:var(--bg2);color:var(--txt)}
         <div class="res-box" style="margin-bottom:12px">
           <div style="font-size:10px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px">Resumen Económico</div>
           <div class="res-row"><span style="color:var(--txt2)">Costo Directo</span><span style="font-family:'DM Mono',monospace;font-weight:700" id="r-cd">₲ 0</span></div>
-          <div class="res-row"><span style="color:var(--txt2)">G. Indirectos <input class="res-input" id="pct-gi" type="number" value="13" min="0" max="50" step="0.5" oninput="recalcResumen()">%</span><span style="font-family:'DM Mono',monospace" id="r-gi">₲ 0</span></div>
+          <div class="res-row"><span style="color:var(--txt2)">G. Indirectos <input class="res-input" id="pct-gi" type="number" value="13" min="0" max="50" step="0.5" oninput="recalcResumen();renderPres()">%</span><span style="font-family:'DM Mono',monospace" id="r-gi">₲ 0</span></div>
           <div class="res-row" style="opacity:.5"><span>── Subtotal</span><span style="font-family:'DM Mono',monospace" id="r-sub1">₲ 0</span></div>
-          <div class="res-row"><span style="color:var(--txt2)">Beneficio <input class="res-input" id="pct-bi" type="number" value="6" min="0" max="30" step="0.5" oninput="recalcResumen()">%</span><span style="font-family:'DM Mono',monospace" id="r-bi">₲ 0</span></div>
+          <div class="res-row"><span style="color:var(--txt2)">Beneficio <input class="res-input" id="pct-bi" type="number" value="6" min="0" max="30" step="0.5" oninput="recalcResumen();renderPres()">%</span><span style="font-family:'DM Mono',monospace" id="r-bi">₲ 0</span></div>
           <div class="res-row" style="opacity:.5"><span>── Subtotal</span><span style="font-family:'DM Mono',monospace" id="r-sub2">₲ 0</span></div>
-          <div class="res-row"><span style="color:var(--txt2)">IVA <input class="res-input" id="pct-iva" type="number" value="10" min="0" max="30" step="0.5" oninput="recalcResumen()">%</span><span style="font-family:'DM Mono',monospace" id="r-iva">₲ 0</span></div>
+          <div class="res-row"><span style="color:var(--txt2)">IVA <input class="res-input" id="pct-iva" type="number" value="10" min="0" max="30" step="0.5" oninput="recalcResumen();renderPres()">%</span><span style="font-family:'DM Mono',monospace" id="r-iva">₲ 0</span></div>
           <div class="res-row total"><span>TOTAL OBRA</span><span style="font-family:'DM Mono',monospace" id="r-total">₲ 0</span></div>
         </div>
         <div class="card">
@@ -1886,12 +1908,23 @@ function addToPres(pid){
   notif(`✓ ${p.cod} agregado al presupuesto`);
   marcarUnsaved(); renderSel(); renderPres(); renderBD(); renderDashboard();
 }
+function getFactorBeneficios(){
+  const gi  = parseFloat(document.getElementById('pct-gi')?.value||'13')||13;
+  const bi  = parseFloat(document.getElementById('pct-bi')?.value||'6')||6;
+  const iva = parseFloat(document.getElementById('pct-iva')?.value||'10')||10;
+  return {factor:(1+gi/100)*(1+bi/100)*(1+iva/100), gi, bi, iva};
+}
 function renderPres(){
   const tbody = document.getElementById('pres-tbody');
   if(!PRESUPUESTO.length){
-    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state" style="padding:50px 0"><div class="icon">📋</div><h3>Presupuesto vacío</h3><p>Clic en <strong style="color:var(--acento)">＋ Agregar partida</strong> para comenzar</p></div></td></tr>`;
-    document.getElementById('pres-cd').textContent='₲ 0'; return;
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state" style="padding:50px 0"><div class="icon">📋</div><h3>Presupuesto vacío</h3><p>Clic en <strong style="color:var(--acento)">＋ Agregar partida</strong> para comenzar</p></div></td></tr>`;
+    document.getElementById('pres-cd').textContent='₲ 0';
+    document.getElementById('pres-total').textContent='₲ 0';
+    document.getElementById('pres-factor-label').textContent='';
+    return;
   }
+  const {factor, gi, bi, iva} = getFactorBeneficios();
+  document.getElementById('pres-factor-label').textContent = `GI${gi}% B${bi}% IVA${iva}%`;
   const byCap = {};
   PRESUPUESTO.forEach(item=>{
     const p = DB.find(x=>x.id===item.pid); if(!p) return;
@@ -1901,14 +1934,17 @@ function renderPres(){
   let html='', cd=0;
   Object.keys(byCap).sort().forEach(capId=>{
     const cap = capOf(capId);
-    const capT = byCap[capId].reduce((a,{item,p})=>a+pu(p)*item.qty,0);
+    const capT    = byCap[capId].reduce((a,{item,p})=>a+pu(p)*item.qty,0);
+    const capTFin = Math.round(capT*factor);
     html += `<tr class="cap-row" style="border-left-color:${cap.color}">
-      <td colspan="5" style="background:${cap.color}CC">&nbsp;${capId} — ${cap.name}</td>
+      <td colspan="4" style="background:${cap.color}CC">&nbsp;${capId} — ${cap.name}</td>
       <td class="num" style="background:${cap.color}CC;color:#fff;font-weight:700;font-family:'DM Mono',monospace">₲ ${fmtN(capT)}</td>
+      <td class="num" style="background:${cap.color}99;color:#fff;font-weight:700;font-family:'DM Mono',monospace;font-size:11px">₲ ${fmtN(capTFin)}</td>
       <td style="background:${cap.color}CC"></td>
     </tr>`;
     byCap[capId].forEach(({item,p})=>{
-      const t = pu(p)*item.qty; cd+=t;
+      const t    = pu(p)*item.qty; cd+=t;
+      const tFin = Math.round(t*factor);
       html += `<tr>
         <td><code style="background:var(--bg3);padding:2px 7px;border-radius:5px;font-size:10px;color:var(--acento)">${p.cod}</code></td>
         <td style="font-size:13px">${p.desc}</td>
@@ -1918,18 +1954,25 @@ function renderPres(){
           style="width:90px;padding:5px 8px;text-align:right;border:1px solid var(--borde2);border-radius:7px;font-size:12px;background:var(--bg2);color:var(--txt)"
           onchange="updQty(${item.pid},this.value,'${item.qty}')" oninput="updQtyRapido(${item.pid},this.value)"></td>
         <td class="num" style="font-weight:700;font-size:14px;color:var(--acento);font-family:'DM Mono',monospace">₲ ${fmtN(t)}</td>
+        <td class="num" style="font-weight:700;font-size:13px;color:var(--amarillo);font-family:'DM Mono',monospace">₲ ${fmtN(tFin)}</td>
         <td><button class="btn btn-danger btn-xs" onclick="quitarPres(${item.pid})">✕</button></td>
       </tr>`;
     });
   });
   tbody.innerHTML = html;
-  document.getElementById('pres-cd').textContent = fmt(cd);
+  const cdTotal = cd;
+  const totalFin = Math.round(cdTotal*factor);
+  document.getElementById('pres-cd').textContent    = fmt(cdTotal);
+  document.getElementById('pres-total').textContent = fmt(totalFin);
 }
 function updQtyRapido(pid, val){
   const item = PRESUPUESTO.find(x=>x.pid===pid);
   if(item) item.qty = Math.max(0.01, parseFloat(val)||0.01);
-  let cd=0; PRESUPUESTO.forEach(it=>{const p=DB.find(x=>x.id===it.pid);if(p)cd+=pu(p)*it.qty});
-  document.getElementById('pres-cd').textContent = fmt(cd);
+  const {factor} = getFactorBeneficios();
+  let cd=0;
+  PRESUPUESTO.forEach(it=>{const p=DB.find(x=>x.id===it.pid);if(p)cd+=pu(p)*it.qty});
+  document.getElementById('pres-cd').textContent    = fmt(cd);
+  document.getElementById('pres-total').textContent = fmt(Math.round(cd*factor));
 }
 function updQty(pid, val, prevVal){
   pushHistorial('updQty', {pid, prevQty:parseFloat(prevVal)||1});

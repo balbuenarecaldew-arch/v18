@@ -1632,7 +1632,17 @@ function renderBD(){
 function _renderBDNow(){
   document.getElementById('badge-count').textContent = DB.length + ' partidas';
   const lista = filtrarDB();
+  const q = (document.getElementById('bd-search')?.value||'').toLowerCase();
   let html = '', prevCap = null;
+
+  // Mostrar capítulos sin partidas solo cuando no hay búsqueda activa
+  if(!q){
+    const capsConPartidas = new Set(lista.map(p=>p.cap));
+    CAPS.filter(cap=>!capsConPartidas.has(cap.id)).forEach(cap=>{
+      html += `<tr class="cap-row" style="border-left-color:${cap.color}"><td colspan="9" style="background:${cap.color}99">&nbsp;${cap.id} — ${cap.name} <span style="font-size:9px;opacity:.7;font-weight:400">(vacío — agregá partidas con ＋ Nueva partida)</span></td></tr>`;
+    });
+  }
+
   lista.forEach(p=>{
     const cap = capOf(p.cap);
     if(p.cap !== prevCap){
@@ -2675,7 +2685,10 @@ function guardarCapitulos(){
     });
     cap.ramos=selRamos.length?selRamos:['todos'];
   });
-  cerrarModal('modal-caps'); marcarUnsaved(); renderBD();
+  cerrarModal('modal-caps');
+  marcarUnsaved();
+  guardarFirebase();
+  renderBD();
   notif('✓ Capítulos guardados — ' + CAPS.length + ' capítulos');
 }
 

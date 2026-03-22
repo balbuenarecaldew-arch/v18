@@ -112,7 +112,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;color:var(--txt)
 .btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 
 /* ═══ TABLAS ══════════════════════════════════════════════════ */
-.tbl-wrap{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 320px)}
+.tbl-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;min-width:500px}
 th{padding:9px 12px;text-align:left;font-size:11px;font-weight:700;color:#9DBFAD;background:#161616;border-bottom:2px solid var(--acento3);white-space:nowrap;text-transform:uppercase;letter-spacing:.04em;position:sticky;top:0;z-index:5}
 td{padding:8px 12px;border-bottom:1px solid #2A2A2A;vertical-align:middle;font-size:14px;color:#E8F5EE}
@@ -634,7 +634,7 @@ let CAPS=[
 const RAMO_COLORS={todos:'#22C585',vial:'#E8830A',civil:'#4A9EE8',electrica:'#D4AC0D',sanitaria:'#22C585',hvac:'#A78BFA',acabados:'#F472B6'};
 
 let DB=[], APU={}, PRESUPUESTO=[];
-let skipNextSnapshot = false; // evita que onSnapshot pise el vaciado tras guardar
+let skipSnapshotUntil = 0; // timestamp — ignora snapshots hasta este momento
 let HISTORIAL=[], hayUnsaved=false;
 let ramoActivo='todos', editPid=null, editInsCod=null, editInsIdx=null;
 let logoDataURL=null, currentUser=null, isAdmin=false;
@@ -757,7 +757,7 @@ async function cargarDesdeFirebase(){
   try{
     // Escuchar cambios en tiempo real
     db.collection('datos').doc('base').onSnapshot(snap=>{
-      if(skipNextSnapshot){ skipNextSnapshot=false; setSyncStatus(false); return; }
+      if(Date.now() < skipSnapshotUntil){ setSyncStatus(false); return; }
       if(snap.exists){
         const d=snap.data();
         DB=d.DB||[]; APU=d.APU||{}; PRESUPUESTO=d.PRESUPUESTO||[];
@@ -1802,8 +1802,8 @@ async function guardarPresupuestoActual(){
   recalcResumen();
   renderGuardados();
 
-  // Saltar el próximo onSnapshot para que no pise el vaciado
-  skipNextSnapshot = true;
+  // Ignorar snapshots por 4 segundos para que no pisen el vaciado
+  skipSnapshotUntil = Date.now() + 4000;
   marcarUnsaved();
   await guardarFirebase();
   notif('✓ Presupuesto N°' + nroActual + ' "' + nuevo.nombre + '" guardado');

@@ -1636,9 +1636,14 @@ function _renderBDNow(){
   let html = '', prevCap = null;
 
   // Mostrar capítulos sin partidas solo cuando no hay búsqueda activa
+  // y solo si el ramo activo corresponde a ese capítulo
   if(!q){
     const capsConPartidas = new Set(lista.map(p=>p.cap));
-    CAPS.filter(cap=>!capsConPartidas.has(cap.id)).forEach(cap=>{
+    CAPS.filter(cap=>{
+      if(capsConPartidas.has(cap.id)) return false; // ya tiene partidas visibles
+      if(ramoActivo === 'todos') return true; // en "todos" mostrar todos los caps vacíos
+      return cap.ramos && cap.ramos.includes(ramoActivo); // solo si el cap pertenece al ramo
+    }).forEach(cap=>{
       html += `<tr class="cap-row" style="border-left-color:${cap.color}"><td colspan="9" style="background:${cap.color}99">&nbsp;${cap.id} — ${cap.name} <span style="font-size:9px;opacity:.7;font-weight:400">(vacío — agregá partidas con ＋ Nueva partida)</span></td></tr>`;
     });
   }
@@ -1789,7 +1794,7 @@ function _renderAPUNow(){
       const pct = total>0?(st/total*100).toFixed(1):0;
       return `<tr style="opacity:.55"><td colspan="5" style="text-align:right;font-size:10px;color:var(--txt3);padding:3px 12px">Subtotal ${label}</td><td class="num" style="color:${fc};font-weight:700;font-size:11px">${fmtN(st)}</td><td class="num" style="font-size:10px;color:var(--txt3)">${pct}%</td><td></td></tr>`;
     };
-    html += `<div style="margin-bottom:18px;border:1px solid var(--borde);border-radius:var(--radio-lg);overflow:hidden">
+    html += `<div style="margin-bottom:18px;border:2px solid rgba(255,255,255,0.12);border-radius:var(--radio-lg);overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,0.06)">
       <div style="background:${cap.color};padding:10px 14px;display:flex;justify-content:space-between;align-items:center">
         <span style="font-weight:700;font-size:13px;color:#fff">${p.cod} — ${p.desc}</span>
         <div style="display:flex;align-items:center;gap:8px">

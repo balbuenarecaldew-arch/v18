@@ -197,7 +197,7 @@ body{font-family:var(--font);font-size:14px;color:var(--txt);background:var(--bg
 .tab.active{color:var(--acento);border-bottom-color:var(--acento)}
 
 /* ═══ VIEWS ═══════════════════════════════════════════════════ */
-.view{display:none;padding:18px;width:100%;box-sizing:border-box;animation:viewFadeIn .2s ease}
+.view{display:none;padding:18px;width:100%;box-sizing:border-box;animation:viewFadeIn .2s ease;height:calc(100vh - 137px);overflow-y:auto}
 @keyframes viewFadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 .view.active{display:block}
 
@@ -598,23 +598,23 @@ select option{background:var(--bg2);color:var(--txt)}
   </div>
 
   <!-- ══ APU ══════════════════════════════════════════════════ -->
-  <div class="view" id="tab-apu">
-    <div class="card">
-      <div class="card-header" style="position:sticky;top:137px;z-index:10">
+  <div class="view" id="tab-apu" style="display:none;padding:0;height:calc(100vh - 137px);overflow:hidden;flex-direction:column">
+    <div class="card" style="height:100%;display:flex;flex-direction:column;margin:0;border-radius:0">
+      <div class="card-header">
         <h2>🔍 Análisis de Precio Unitario</h2>
         <div class="btns">
           <input id="apu-search" placeholder="Buscar partida..." oninput="renderAPU()" style="width:200px;padding:6px 11px;font-size:12px">
           <button class="btn btn-primary" onclick="abrirModalInsumo()">＋ Agregar Insumo</button>
         </div>
       </div>
-      <div id="apu-container" style="padding:16px"></div>
+      <div id="apu-container" style="padding:16px;overflow-y:auto;flex:1"></div>
     </div>
   </div>
 
   <!-- ══ PRESUPUESTO ══════════════════════════════════════════ -->
-  <div class="view" id="tab-pres">
-    <div class="card">
-      <div class="card-header" style="position:sticky;top:137px;z-index:10">
+  <div class="view" id="tab-pres" style="display:none;padding:0;height:calc(100vh - 137px);overflow:hidden">
+    <div class="card" style="height:100%;display:flex;flex-direction:column;margin:0;border-radius:0">
+      <div class="card-header">
         <h2>📊 Presupuesto Activo</h2>
         <div class="btns">
           <button class="btn btn-primary" onclick="abrirSelector()">＋ Agregar partida</button>
@@ -632,7 +632,7 @@ select option{background:var(--bg2);color:var(--txt)}
           <div class="form-group"><label>Fecha</label><input id="p-fecha" type="date" oninput="marcarUnsaved()"></div>
         </div>
       </div>
-      <div class="tbl-wrap-fixed" style="max-height:calc(100vh - 370px)">
+      <div style="flex:1;overflow-y:auto;overflow-x:auto">
         <table>
           <thead><tr>
             <th>Código</th><th>Descripción</th><th>Ud.</th>
@@ -1401,7 +1401,8 @@ function deshacerUltima(){
 function showTab(id, el){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('tab-'+id).classList.add('active');
+  const v=document.getElementById('tab-'+id); v.classList.add('active');
+  if(id==='apu'||id==='pres') v.style.display='flex'; else if(id!=='') v.style.display='';
   if(el) el.classList.add('active');
   if(id==='resumen') recalcResumen();
   if(id==='apu') renderAPU();

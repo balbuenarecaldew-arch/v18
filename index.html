@@ -461,19 +461,6 @@ select option{background:var(--bg2);color:var(--txt)}
   .doc-table tr:last-child td{background:#fff!important;color:#111!important;border-top:3px solid #1B4432!important;border-bottom:2px solid #1B4432!important}
   .doc-apu-header{background:#1B4432!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
-
-/* Encabezados de tabla fijos en BD y Presupuesto Activo */
-#tab-bd th, #tab-pres th {
-  position: sticky;
-  top: 183px; /* 133px tabs + ~50px card-header */
-  z-index: 6;
-}
-/* En APU el encabezado queda justo debajo de las tabs */
-#tab-apu th {
-  position: sticky;
-  top: 133px;
-  z-index: 4;
-}
 </style>
 </head>
 <body>
@@ -586,7 +573,7 @@ select option{background:var(--bg2);color:var(--txt)}
   <!-- ══ BASE DE DATOS ════════════════════════════════════════ -->
   <div class="view" id="tab-bd">
     <div class="card">
-      <div class="card-header" style="position:sticky;top:133px;z-index:10;border-radius:0">
+      <div class="card-header">
         <h2>📦 Base de Datos de Partidas</h2>
         <div class="btns">
           <input id="bd-search" placeholder="Buscar código o descripción..." oninput="renderBD()" style="width:200px;padding:6px 11px;font-size:12px">
@@ -627,7 +614,7 @@ select option{background:var(--bg2);color:var(--txt)}
   <!-- ══ PRESUPUESTO ══════════════════════════════════════════ -->
   <div class="view" id="tab-pres">
     <div class="card">
-      <div class="card-header" style="position:sticky;top:133px;z-index:10;border-radius:0">
+      <div class="card-header">
         <h2>📊 Presupuesto Activo</h2>
         <div class="btns">
           <button class="btn btn-primary" onclick="abrirSelector()">＋ Agregar partida</button>

@@ -600,7 +600,7 @@ select option{background:var(--bg2);color:var(--txt)}
   <!-- ══ APU ══════════════════════════════════════════════════ -->
   <div class="view" id="tab-apu">
     <div class="card">
-      <div class="card-header">
+      <div class="card-header" style="position:sticky;top:137px;z-index:10">
         <h2>🔍 Análisis de Precio Unitario</h2>
         <div class="btns">
           <input id="apu-search" placeholder="Buscar partida..." oninput="renderAPU()" style="width:200px;padding:6px 11px;font-size:12px">
@@ -614,7 +614,7 @@ select option{background:var(--bg2);color:var(--txt)}
   <!-- ══ PRESUPUESTO ══════════════════════════════════════════ -->
   <div class="view" id="tab-pres">
     <div class="card">
-      <div class="card-header">
+      <div class="card-header" style="position:sticky;top:137px;z-index:10">
         <h2>📊 Presupuesto Activo</h2>
         <div class="btns">
           <button class="btn btn-primary" onclick="abrirSelector()">＋ Agregar partida</button>

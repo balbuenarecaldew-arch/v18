@@ -238,11 +238,11 @@ th{
   padding:8px 12px;text-align:left;font-size:10px;font-weight:700;
   color:var(--txt3);background:var(--bg2);border-bottom:1px solid var(--borde2);
   white-space:nowrap;text-transform:uppercase;letter-spacing:.06em;
-  position:sticky;top:133px;z-index:5
+  position:sticky;top:0;z-index:5
 }
 /* Usado solo para el widget de dashboard recientes (max-height intencional) */
-.tbl-wrap-fixed{overflow-x:auto;overflow-y:auto}
-.tbl-wrap-fixed th{position:sticky;top:137px;z-index:5}
+.tbl-wrap-fixed{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 230px)}
+.tbl-wrap-fixed th{position:sticky;top:0;z-index:5}
 td{padding:7px 12px;border-bottom:1px solid var(--borde);vertical-align:middle;font-size:13px;color:var(--txt)}
 tr:hover td{background:rgba(255,255,255,.02)}
 .cap-row td{
@@ -435,7 +435,7 @@ select option{background:var(--bg2);color:var(--txt)}
   .global-search-wrap{display:none}
   .ramos-bar{padding:8px 12px;top:50px}
   .tabs{top:88px;padding:0 12px}
-  th{top:122px}
+  th{top:134px}
   .view{padding:12px}
   .stat-cards{grid-template-columns:repeat(2,1fr)}
   .modal{padding:18px;width:96%;max-height:96vh}
@@ -461,12 +461,6 @@ select option{background:var(--bg2);color:var(--txt)}
   .doc-table tr:last-child td{background:#fff!important;color:#111!important;border-top:3px solid #1B4432!important;border-bottom:2px solid #1B4432!important}
   .doc-apu-header{background:#1B4432!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
-
-/* th fijo debajo del card-header sticky en BD y Presupuesto */
-#tab-bd th { top: 186px !important; z-index: 6 !important; }
-#tab-pres th { top: 186px !important; z-index: 6 !important; }
-/* APU th fijo solo debajo de tabs */
-#tab-apu th { top: 137px !important; z-index: 4 !important; }
 </style>
 </head>
 <body>
@@ -579,7 +573,7 @@ select option{background:var(--bg2);color:var(--txt)}
   <!-- ══ BASE DE DATOS ════════════════════════════════════════ -->
   <div class="view" id="tab-bd">
     <div class="card">
-      <div class="card-header" id="bd-card-header" style="position:sticky;top:137px;z-index:10">
+      <div class="card-header">
         <h2>📦 Base de Datos de Partidas</h2>
         <div class="btns">
           <input id="bd-search" placeholder="Buscar código o descripción..." oninput="renderBD()" style="width:200px;padding:6px 11px;font-size:12px">
@@ -620,7 +614,7 @@ select option{background:var(--bg2);color:var(--txt)}
   <!-- ══ PRESUPUESTO ══════════════════════════════════════════ -->
   <div class="view" id="tab-pres">
     <div class="card">
-      <div class="card-header" id="pres-card-header" style="position:sticky;top:137px;z-index:10">
+      <div class="card-header">
         <h2>📊 Presupuesto Activo</h2>
         <div class="btns">
           <button class="btn btn-primary" onclick="abrirSelector()">＋ Agregar partida</button>
@@ -1811,14 +1805,14 @@ function _renderAPUNow(){
     } else {
       html += `<table style="width:100%;border-collapse:collapse">
         <thead><tr>
-          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);position:sticky;top:133px;z-index:4">TIPO</th>
-          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);position:sticky;top:133px;z-index:4">DESCRIPCIÓN</th>
-          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);text-align:center;position:sticky;top:133px;z-index:4">UD.</th>
-          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);text-align:right;position:sticky;top:133px;z-index:4">CANTIDAD</th>
-          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);text-align:right;position:sticky;top:133px;z-index:4">P.UNIT ₲</th>
-          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);text-align:right;position:sticky;top:133px;z-index:4">SUBTOTAL ₲</th>
-          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);text-align:right;position:sticky;top:133px;z-index:4">%</th>
-          <th style="padding:7px 12px;background:var(--bg2);position:sticky;top:133px;z-index:4"></th>
+          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);position:sticky;top:0;z-index:4">TIPO</th>
+          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);position:sticky;top:0;z-index:4">DESCRIPCIÓN</th>
+          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);text-align:center;position:sticky;top:0;z-index:4">UD.</th>
+          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);text-align:right;position:sticky;top:0;z-index:4">CANTIDAD</th>
+          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);text-align:right;position:sticky;top:0;z-index:4">P.UNIT ₲</th>
+          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);text-align:right;position:sticky;top:0;z-index:4">SUBTOTAL ₲</th>
+          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);text-align:right;position:sticky;top:0;z-index:4">%</th>
+          <th style="padding:7px 12px;background:var(--bg2);position:sticky;top:0;z-index:4"></th>
         </tr></thead>
         <tbody>
           ${secRows(byTipo('M'),'M','rgba(74,171,239,.06)','var(--azul)')}

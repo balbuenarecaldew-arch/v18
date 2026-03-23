@@ -241,7 +241,7 @@ th{
   position:sticky;top:0;z-index:5
 }
 /* Usado solo para el widget de dashboard recientes (max-height intencional) */
-.tbl-wrap-fixed{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 230px)}
+.tbl-wrap-fixed{overflow-x:auto;overflow-y:auto}
 .tbl-wrap-fixed th{position:sticky;top:0;z-index:5}
 td{padding:7px 12px;border-bottom:1px solid var(--borde);vertical-align:middle;font-size:13px;color:var(--txt)}
 tr:hover td{background:rgba(255,255,255,.02)}
@@ -583,7 +583,7 @@ select option{background:var(--bg2);color:var(--txt)}
           <button class="btn btn-export admin-only" onclick="exportarExcel()">📤 Exportar Excel</button>
         </div>
       </div>
-      <div class="tbl-wrap">
+      <div class="tbl-wrap-fixed" style="max-height:calc(100vh - 195px)">
         <table>
           <thead><tr>
             <th>Código</th><th>Descripción</th><th>Ud.</th><th>Ramo</th>
@@ -632,7 +632,7 @@ select option{background:var(--bg2);color:var(--txt)}
           <div class="form-group"><label>Fecha</label><input id="p-fecha" type="date" oninput="marcarUnsaved()"></div>
         </div>
       </div>
-      <div class="tbl-wrap">
+      <div class="tbl-wrap-fixed" style="max-height:calc(100vh - 370px)">
         <table>
           <thead><tr>
             <th>Código</th><th>Descripción</th><th>Ud.</th>

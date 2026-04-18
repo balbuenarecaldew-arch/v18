@@ -36,40 +36,40 @@
 <body>
 
 <!-- â•â• OFFLINE BANNER â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
-<div id="offline-banner">âš  Sin conexiÃ³n a internet â€” los cambios se guardarÃ¡n cuando vuelva la conexiÃ³n</div>
+<div id="offline-banner">Sin conexión a internet. Los cambios se guardarán cuando vuelva la conexión.</div>
 
 <!-- â•â• INACTIVITY WARNING â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
-<div id="inactivity-warning">â± Tu sesiÃ³n se cerrarÃ¡ en <span id="inactivity-countdown">60</span>s por inactividad.<br><button onclick="resetInactivity()" style="margin-top:6px;padding:4px 12px;background:#1A0800;border:1px solid #1A0800;border-radius:6px;color:#E89020;font-weight:700;cursor:pointer;font-size:11px">Continuar sesiÃ³n</button></div>
+<div id="inactivity-warning">Tu sesión se cerrará en <span id="inactivity-countdown">60</span>s por inactividad.<br><button onclick="resetInactivity()" style="margin-top:6px;padding:4px 12px;background:#1A0800;border:1px solid #1A0800;border-radius:6px;color:#E89020;font-weight:700;cursor:pointer;font-size:11px">Continuar sesión</button></div>
 
 <!-- â•â• AUTOSAVE â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
-<div id="autosave-info"><span id="autosave-dot" style="width:5px;height:5px;border-radius:50%;background:currentColor;display:inline-block"></span><span id="autosave-text">Guardado automÃ¡tico activo</span></div>
+<div id="autosave-info"><span id="autosave-dot" style="width:5px;height:5px;border-radius:50%;background:currentColor;display:inline-block"></span><span id="autosave-text">Guardado automático activo</span></div>
 
 <!-- â•â•â•â•â•â• LOGIN â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo-wrap">
-      <div class="login-logo-icon">ðŸ—</div>
+      <div class="login-logo-icon">PA</div>
       <h1>PresupuestAPP</h1>
-      <p class="sub">Sistema de Presupuestos de Obras Â· v3.0</p>
+      <p class="sub">Sistema de Presupuestos de Obras · v3.0</p>
     </div>
     <div class="login-field">
-      <label>Correo electrÃ³nico</label>
+      <label>Correo electrónico</label>
       <input type="email" id="login-email" placeholder="tu@correo.com" autocomplete="email"
         onkeydown="if(event.key==='Enter')document.getElementById('login-pass').focus()">
     </div>
     <div class="login-field">
-      <label>ContraseÃ±a</label>
+      <label>Contraseña</label>
       <div class="pass-wrap">
         <input type="password" id="login-pass" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" autocomplete="current-password"
           onkeydown="if(event.key==='Enter')loginBtn()">
-        <button class="pass-eye" type="button" onclick="togglePass()" title="Mostrar/ocultar contraseÃ±a">
+        <button class="pass-eye" type="button" onclick="togglePass()" title="Mostrar u ocultar contraseña">
           <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
         </button>
       </div>
     </div>
-    <button class="login-btn" onclick="loginBtn()" id="login-submit">Ingresar â†’</button>
+    <button class="login-btn" onclick="loginBtn()" id="login-submit">Ingresar</button>
     <div class="login-err" id="login-err"></div>
-    <div class="login-version">v3.0 Â· Firebase Â· Para consultas contactÃ¡ al administrador</div>
+    <div class="login-version">v3.0 · Firebase · Para consultas contactá al administrador</div>
   </div>
 </div>
 
@@ -77,7 +77,7 @@
 <div id="app">
   <header class="topbar">
     <div class="topbar-brand">
-      <div class="topbar-brand-icon">ðŸ—</div>
+      <div class="topbar-brand-icon">PA</div>
       <span>PresupuestAPP</span>
     </div>
     <!-- Buscador global -->
@@ -471,8 +471,6 @@
 <div class="notif" id="notif"></div>
 <div id="print-output"></div>
 
-<script>
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 <script defer src="config/firebase-config.js"></script>
 <script defer src="scripts/state.js"></script>
 <script defer src="utils/app-helpers.js"></script>

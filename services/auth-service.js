@@ -19,11 +19,11 @@ async function loginBtn(){
   const err   = document.getElementById('login-err');
   err.textContent = ''; err.classList.remove('visible');
 
-  if(!email){ mostrarErrorLogin('IngresÃ¡ tu correo electrÃ³nico'); return; }
-  if(!pass){  mostrarErrorLogin('IngresÃ¡ tu contraseÃ±a'); return; }
-  if(pass.length < 6){ mostrarErrorLogin('La contraseÃ±a debe tener al menos 6 caracteres'); return; }
+  if(!email){ mostrarErrorLogin('Ingresá tu correo electrónico'); return; }
+  if(!pass){  mostrarErrorLogin('Ingresá tu contraseña'); return; }
+  if(pass.length < 6){ mostrarErrorLogin('La contraseña debe tener al menos 6 caracteres'); return; }
 
-  btn.textContent = 'â³ Ingresando...'; btn.disabled = true;
+  btn.textContent = 'Ingresando...'; btn.disabled = true;
 
   try{
     const cred = await auth.signInWithEmailAndPassword(email, pass);
@@ -33,26 +33,26 @@ async function loginBtn(){
     const accesoConcedido = await registrarAcceso(user);
     if(!accesoConcedido){
       await auth.signOut();
-      mostrarErrorLogin('Tu acceso estÃ¡ bloqueado. ContactÃ¡ al administrador.');
-      btn.textContent = 'Ingresar â†’'; btn.disabled = false;
+      mostrarErrorLogin('Tu acceso está bloqueado. Contactá al administrador.');
+      btn.textContent = 'Ingresar'; btn.disabled = false;
       return;
     }
     isAdmin = await verificarAdmin(user);
     abrirApp(user);
   }catch(e){
     const msgs = {
-      'auth/user-not-found':      'No existe una cuenta con ese correo electrÃ³nico.',
-      'auth/wrong-password':      'ContraseÃ±a incorrecta. VerificÃ¡ e intentÃ¡ de nuevo.',
-      'auth/invalid-credential':  'Correo o contraseÃ±a incorrectos. VerificÃ¡ los datos.',
-      'auth/invalid-email':       'El correo no tiene un formato vÃ¡lido (ej: usuario@dominio.com).',
-      'auth/too-many-requests':   'âš  Demasiados intentos fallidos. EsperÃ¡ unos minutos antes de intentar de nuevo.',
-      'auth/user-disabled':       'Tu cuenta fue deshabilitada. ContactÃ¡ al administrador.',
-      'auth/network-request-failed': 'âš  Sin conexiÃ³n a internet. VerificÃ¡ tu red e intentÃ¡ de nuevo.',
-      'auth/operation-not-allowed': 'El acceso con email/contraseÃ±a no estÃ¡ habilitado en Firebase.',
-      'auth/configuration-not-found': 'Error de configuraciÃ³n de Firebase. ContactÃ¡ al administrador.',
+      'auth/user-not-found':      'No existe una cuenta con ese correo electrónico.',
+      'auth/wrong-password':      'Contraseña incorrecta. Verificá e intentá de nuevo.',
+      'auth/invalid-credential':  'Correo o contraseña incorrectos. Verificá los datos.',
+      'auth/invalid-email':       'El correo no tiene un formato válido (ej: usuario@dominio.com).',
+      'auth/too-many-requests':   'Demasiados intentos fallidos. Esperá unos minutos antes de intentar de nuevo.',
+      'auth/user-disabled':       'Tu cuenta fue deshabilitada. Contactá al administrador.',
+      'auth/network-request-failed': 'Sin conexión a internet. Verificá tu red e intentá de nuevo.',
+      'auth/operation-not-allowed': 'El acceso con email y contraseña no está habilitado en Firebase.',
+      'auth/configuration-not-found': 'Error de configuración de Firebase. Contactá al administrador.',
     };
-    mostrarErrorLogin(msgs[e.code] || 'Error inesperado. IntentÃ¡ de nuevo o contactÃ¡ al administrador.');
-    btn.textContent = 'Ingresar â†’'; btn.disabled = false;
+    mostrarErrorLogin(msgs[e.code] || 'Error inesperado. Intentá de nuevo o contactá al administrador.');
+    btn.textContent = 'Ingresar'; btn.disabled = false;
   }
 }
 
@@ -70,11 +70,11 @@ function abrirApp(user){
   if(isAdmin){
     document.getElementById('admin-badge').style.display = '';
     document.getElementById('tab-admin-btn').style.display = '';
-    notif('âš¡ Bienvenido, Administrador');
+    notif('Bienvenido, Administrador');
   } else {
     // Ocultar botones de peligro para no-admins
     document.querySelectorAll('.admin-only').forEach(el=>el.style.display='none');
-    notif('âœ“ Bienvenido, ' + user.email.split('@')[0]);
+    notif('Bienvenido, ' + user.email.split('@')[0]);
   }
   cargarDesdeFirebase();
   initSecciones();
@@ -85,7 +85,7 @@ function abrirApp(user){
 }
 
 function cerrarSesion(auto=false){
-  if(!auto && !confirm('Â¿Cerrar sesiÃ³n?')) return;
+  if(!auto && !confirm('¿Cerrar sesión?')) return;
   appAbierta = false;
   currentUser = null;
   clearTimeout(inactivityTimer);
@@ -107,9 +107,9 @@ function cerrarSesion(auto=false){
     document.getElementById('login-pass').value = '';
     document.getElementById('login-err').textContent = '';
     document.getElementById('login-err').classList.remove('visible');
-    document.getElementById('login-submit').textContent = 'Ingresar â†’';
+    document.getElementById('login-submit').textContent = 'Ingresar';
     document.getElementById('login-submit').disabled = false;
-    notif(auto ? 'â± SesiÃ³n cerrada por inactividad' : 'SesiÃ³n cerrada');
+    notif(auto ? 'Sesión cerrada por inactividad' : 'Sesión cerrada');
   });
 }
 

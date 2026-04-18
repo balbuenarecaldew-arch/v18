@@ -19,3 +19,4 @@ window.addEventListener('beforeunload',e=>{if(hayUnsaved){e.preventDefault();e.r
 // Click afuera del buscador global
 document.addEventListener('click',e=>{
   if(!document.querySelector('.global-search-wrap')?.contains(e.target)) ocultarResultadosGlobal();
+});

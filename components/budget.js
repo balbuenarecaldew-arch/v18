@@ -84,7 +84,7 @@ function renderPres(){
     const capTFin = Math.round(capT * factor);
     html += `
       <tr class="cap-row" style="border-left-color:${cap.color}">
-        <td colspan="4" style="background:${cap.color}CC">&nbsp;${capId} - ${cap.name}</td>
+        <td colspan="5" style="background:${cap.color}CC">&nbsp;${capId} - ${cap.name}</td>
         <td class="num" style="background:${cap.color}CC;color:#fff;font-weight:700;font-family:'IBM Plex Mono',monospace">Gs. ${fmtN(capT)}</td>
         <td class="num" style="background:${cap.color}99;color:#fff;font-weight:700;font-family:'IBM Plex Mono',monospace;font-size:11px">Gs. ${fmtN(capTFin)}</td>
         <td style="background:${cap.color}CC"></td>
@@ -112,8 +112,8 @@ function renderPres(){
               oninput="updQtyRapido(${item.pid},this.value)"
             >
           </td>
-          <td class="num" style="font-weight:700;font-size:14px;color:var(--acento);font-family:'IBM Plex Mono',monospace">Gs. ${fmtN(t)}</td>
-          <td class="num" style="font-weight:700;font-size:13px;color:var(--amarillo);font-family:'IBM Plex Mono',monospace">Gs. ${fmtN(tFin)}</td>
+          <td id="pres-item-total-${item.pid}" class="num" style="font-weight:700;font-size:14px;color:var(--acento);font-family:'IBM Plex Mono',monospace">Gs. ${fmtN(t)}</td>
+          <td id="pres-item-final-${item.pid}" class="num" style="font-weight:700;font-size:13px;color:var(--amarillo);font-family:'IBM Plex Mono',monospace">Gs. ${fmtN(tFin)}</td>
           <td><button class="btn btn-danger btn-xs" onclick="quitarPres(${item.pid})">Quitar</button></td>
         </tr>
       `;
@@ -135,7 +135,15 @@ function updQtyRapido(pid, val){
   let cd = 0;
   PRESUPUESTO.forEach(it => {
     const p = DB.find(x => x.id === it.pid);
-    if(p) cd += pu(p) * it.qty;
+    if(!p) return;
+    const totalItem = pu(p) * it.qty;
+    const totalItemFinal = Math.round(totalItem * factor);
+    cd += totalItem;
+
+    const totalCell = document.getElementById(`pres-item-total-${it.pid}`);
+    const finalCell = document.getElementById(`pres-item-final-${it.pid}`);
+    if(totalCell) totalCell.textContent = `Gs. ${fmtN(totalItem)}`;
+    if(finalCell) finalCell.textContent = `Gs. ${fmtN(totalItemFinal)}`;
   });
   document.getElementById('pres-cd').textContent = fmt(cd);
   document.getElementById('pres-total').textContent = fmt(Math.round(cd * factor));
@@ -145,6 +153,7 @@ function updQty(pid, val, prevVal){
   pushHistorial('updQty', { pid, prevQty: parseFloat(prevVal) || 1 });
   updQtyRapido(pid, val);
   marcarUnsaved();
+  renderPres();
   renderDashboard();
 }
 

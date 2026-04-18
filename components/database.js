@@ -88,6 +88,19 @@ function renderCapituloRow(capId, partidas){
   `;
 }
 
+function renderCapituloEmptyRow(capId){
+  return `
+    <tr class="db-empty-cap-row">
+      <td colspan="11">
+        <div class="empty-state" style="padding:22px 0">
+          <h3 style="margin-bottom:4px">Capitulo ${capId} sin partidas</h3>
+          <p>Usa "Nueva partida" para cargar items en este capitulo.</p>
+        </div>
+      </td>
+    </tr>
+  `;
+}
+
 function _renderBDNow(){
   document.getElementById('badge-count').textContent = `${DB.length} partidas`;
 
@@ -103,7 +116,7 @@ function _renderBDNow(){
       : 'Cada partida concentra su resumen economico y su desglose APU en el mismo lugar. Expandi una fila para ver, editar y recalcular insumos sin salir de la base.';
   }
 
-  if(!lista.length){
+  if(!lista.length && q){
     document.getElementById('bd-tbody').innerHTML = `
       <tr>
         <td colspan="11">
@@ -118,15 +131,15 @@ function _renderBDNow(){
     return;
   }
 
-  const grupos = [];
+  const gruposMap = new Map();
   lista.forEach(partida=>{
-    let grupo = grupos.find(item=>item.capId === partida.cap);
-    if(!grupo){
-      grupo = { capId: partida.cap, partidas: [] };
-      grupos.push(grupo);
-    }
-    grupo.partidas.push(partida);
+    if(!gruposMap.has(partida.cap)) gruposMap.set(partida.cap, []);
+    gruposMap.get(partida.cap).push(partida);
   });
+
+  const grupos = q
+    ? Array.from(gruposMap.entries()).map(([capId, partidas])=>({ capId, partidas }))
+    : CAPS.map(cap=>({ capId: cap.id, partidas: gruposMap.get(cap.id) || [] }));
 
   let html = '';
 
@@ -134,6 +147,10 @@ function _renderBDNow(){
     const collapsed = collapsedCapitulos.has(String(grupo.capId));
     html += renderCapituloRow(grupo.capId, grupo.partidas);
     if(collapsed) return;
+    if(!grupo.partidas.length){
+      html += renderCapituloEmptyRow(grupo.capId);
+      return;
+    }
     grupo.partidas.forEach(partida=>{
       html += renderPartidaSummaryRow(partida);
       if(expandedPartidas.has(String(partida.id))){
@@ -189,9 +206,14 @@ function renderPartidaSummaryRow(partida){
       <td class="num total-cell">${fmtN(pu(partida))}</td>
       <td>
         <div class="table-actions">
-          <button class="btn btn-secondary btn-xs" onclick="editarPartida(${partida.id})">Editar</button>
-          <button class="btn btn-xs" onclick="addToPres(${partida.id})" style="${enPresStyle(enPres)}">${enPres ? '+1' : 'Agregar'}</button>
-          <button class="btn btn-danger btn-xs" onclick="eliminarPartida(${partida.id})">Eliminar</button>
+          <div class="budget-action-group">
+            <button class="budget-action-btn add" onclick="addToPres(${partida.id})">${enPres ? 'Agregar +1' : 'Agregar'}</button>
+            <button class="budget-action-btn remove" onclick="quitarPres(${partida.id})" ${enPres ? '' : 'disabled'}>Excluir</button>
+          </div>
+          <div class="table-actions-secondary">
+            <button class="btn btn-secondary btn-xs" onclick="editarPartida(${partida.id})">Editar</button>
+            <button class="btn btn-danger btn-xs" onclick="eliminarPartida(${partida.id})">Eliminar</button>
+          </div>
         </div>
       </td>
     </tr>

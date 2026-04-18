@@ -42,12 +42,12 @@ const capOf = id => CAPS.find(c=>c.id===id) || {name:'Sin capítulo',color:'#888
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 window.addEventListener('online', () => {
   document.getElementById('offline-banner').classList.remove('visible');
-  notif('âœ“ ConexiÃ³n restablecida');
+  notif('Conexion restablecida');
   if(hayUnsaved) guardarFirebase();
 });
 window.addEventListener('offline', () => {
   document.getElementById('offline-banner').classList.add('visible');
-  notif('âš  Sin conexiÃ³n â€” los cambios se guardan localmente', '#E89020');
+  notif('Sin conexion. Los cambios se guardan localmente.', '#E89020');
 });
 
 // CachÃ© offline con localStorage
@@ -95,7 +95,7 @@ function resetInactivity(){
   if(!appAbierta) return;
   warningTimer = setTimeout(mostrarWarningInactividad, INACTIVITY_TIMEOUT - WARNING_BEFORE);
   inactivityTimer = setTimeout(() => {
-    if(appAbierta){ notif('SesiÃ³n cerrada por inactividad','#E89020'); cerrarSesion(true); }
+    if(appAbierta){ notif('Sesion cerrada por inactividad', '#E89020'); cerrarSesion(true); }
   }, INACTIVITY_TIMEOUT);
 }
 function mostrarWarningInactividad(){
@@ -124,12 +124,12 @@ function iniciarAutosave(){
       const el = document.getElementById('autosave-info');
       const txt = document.getElementById('autosave-text');
       el.classList.add('saving');
-      txt.textContent = 'Guardando automÃ¡ticamente...';
+      txt.textContent = 'Guardando automaticamente...';
       await guardarFirebase(true);
       el.classList.remove('saving');
       el.classList.add('saved');
       txt.textContent = 'Auto-guardado a las ' + new Date().toLocaleTimeString('es-PY',{hour:'2-digit',minute:'2-digit'});
-      setTimeout(() => { el.classList.remove('saved'); txt.textContent = 'Guardado automÃ¡tico activo'; }, 3000);
+      setTimeout(() => { el.classList.remove('saved'); txt.textContent = 'Guardado automatico activo'; }, 3000);
     }
     guardarCacheLocal();
   }, 2 * 60 * 1000);

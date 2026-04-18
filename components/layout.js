@@ -1,4 +1,4 @@
-function getTabButton(id){
+﻿function getTabButton(id){
   return document.querySelector(`.tab[data-tab="${id}"]`);
 }
 
@@ -51,7 +51,12 @@ function notif(msg, color){
   n._t = setTimeout(()=>n.classList.remove('show'), 3000);
 }
 
-function cerrarModal(id){ document.getElementById(id).classList.remove('open'); }
+function cerrarModal(id){
+  document.getElementById(id).classList.remove('open');
+  if(id === 'modal-insumo' && typeof resetInsumoModalState === 'function'){
+    resetInsumoModalState();
+  }
+}
 function abrirModal(id){ document.getElementById(id).classList.add('open'); }
 
 function buscarGlobal(q){
@@ -66,7 +71,7 @@ function buscarGlobal(q){
     partidas.forEach(p=>{
       html += `<div style="padding:9px 14px;cursor:pointer;border-bottom:1px solid var(--borde);transition:background .15s" onmousedown="irAPartida('${p.id}')" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background=''">
         <div style="font-size:12px;font-weight:600;color:var(--txt)">${p.desc}</div>
-        <div style="font-size:10px;color:var(--txt3);margin-top:2px">${p.cod} · ${capOf(p.cap).name} · ${fmt(pu(p))}</div>
+        <div style="font-size:10px;color:var(--txt3);margin-top:2px">${p.cod} | ${capOf(p.cap).name} | ${fmt(pu(p))}</div>
       </div>`;
     });
   }
@@ -77,7 +82,7 @@ function buscarGlobal(q){
     guardados.forEach(p=>{
       html += `<div style="padding:9px 14px;cursor:pointer;transition:background .15s" onmousedown="abrirPresupuestoGuardadoDesdeSearch(${PRESUPUESTOS_GUARDADOS.indexOf(p)})" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background=''">
         <div style="font-size:12px;font-weight:600;color:var(--txt)">${p.nombre||'Sin nombre'}</div>
-        <div style="font-size:10px;color:var(--txt3);margin-top:2px">${p.cliente||'—'} · ${p.fecha||'—'}</div>
+        <div style="font-size:10px;color:var(--txt3);margin-top:2px">${p.cliente||'-'} | ${p.fecha||'-'}</div>
       </div>`;
     });
   }
@@ -116,3 +121,4 @@ function abrirPresupuestoGuardadoDesdeSearch(idx){
   ocultarResultadosGlobal();
   showTab('guardados', getTabButton('guardados'));
 }
+

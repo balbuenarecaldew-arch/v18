@@ -151,7 +151,7 @@
           <button class="btn btn-primary" onclick="abrirModalPartida()">+ Nueva partida</button>
           <button class="btn btn-secondary" onclick="abrirModalCaps()">Capítulos</button>
           <button class="btn btn-warning" onclick="abrirImportarExcel()">Importar Excel</button>
-          <button class="btn btn-export admin-only" onclick="exportarExcel()">Exportar Excel</button>
+          <button class="btn btn-export admin-only" onclick="exportarExcel()">Exportar base</button>
         </div>
       </div>
       <div class="card-body" style="padding-bottom:0">
@@ -179,6 +179,7 @@
         <h2>Presupuesto Activo</h2>
         <div class="btns">
           <button class="btn btn-primary" onclick="abrirSelector()">+ Agregar partida</button>
+          <button class="btn btn-export" onclick="exportarPresupuestoFinalExcel()">Excel presupuesto final</button>
           <button class="btn btn-secondary" onclick="guardarPresupuestoActual()" style="background:var(--acento3);color:var(--acento);border-color:var(--acento2)">Guardar en archivo</button>
           <button class="btn btn-danger" onclick="limpiarPres()">Vaciar</button>
         </div>
@@ -253,7 +254,8 @@
         <div class="card">
           <div class="card-header"><h2>Exportar</h2></div>
           <div class="card-body" style="display:flex;flex-direction:column;gap:8px">
-            <button class="btn btn-export admin-only" style="justify-content:center;width:100%" onclick="exportarExcel()">Exportar Excel completo</button>
+            <button class="btn btn-export" style="justify-content:center;width:100%" onclick="exportarPresupuestoFinalExcel()">Exportar presupuesto final</button>
+            <button class="btn btn-secondary admin-only" style="justify-content:center;width:100%" onclick="exportarExcel()">Exportar Excel completo</button>
             <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--borde)" class="admin-only">
               <p style="font-size:10px;color:var(--txt3);margin-bottom:7px">Zona de peligro</p>
               <button class="btn btn-danger btn-sm" style="width:100%;justify-content:center" onclick="resetearDatos()">Borrar todos los datos</button>

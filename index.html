@@ -60,7 +60,7 @@
     <div class="login-field">
       <label>Contraseña</label>
       <div class="pass-wrap">
-        <input type="password" id="login-pass" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" autocomplete="current-password"
+        <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"
           onkeydown="if(event.key==='Enter')loginBtn()">
         <button class="pass-eye" type="button" onclick="togglePass()" title="Mostrar u ocultar contraseña">
           <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
@@ -82,42 +82,42 @@
     </div>
     <!-- Buscador global -->
     <div class="global-search-wrap">
-      <span class="gs-icon">ðŸ”</span>
+      <span class="gs-icon">Buscar</span>
       <input type="text" id="global-search" placeholder="Buscar partidas, presupuestos..." oninput="buscarGlobal(this.value)" onfocus="mostrarResultadosGlobal()" onblur="setTimeout(()=>ocultarResultadosGlobal(),200)">
       <div id="global-results"></div>
     </div>
     <div class="topbar-spacer"></div>
     <div class="sync-indicator" id="sync-indicator"><div class="sync-dot"></div><span id="sync-text">sincronizado</span></div>
-    <button id="undo-btn" onclick="deshacerUltima()" title="Sin acciones para deshacer">â†© <span>Deshacer</span></button>
-    <button class="save-btn saved" id="save-btn" onclick="guardarFirebase()">ðŸ’¾ <span>Guardar</span></button>
+    <button id="undo-btn" onclick="deshacerUltima()" title="Sin acciones para deshacer">↺ <span>Deshacer</span></button>
+    <button class="save-btn saved" id="save-btn" onclick="guardarFirebase()">₲ <span>Guardar</span></button>
     <span class="badge-count" id="badge-count">0 partidas</span>
     <div class="topbar-user">
       <div class="topbar-dot"></div>
-      <span id="user-email-display">â€”</span>
+      <span id="user-email-display">—</span>
     </div>
-    <span class="admin-badge" id="admin-badge" style="display:none">âš¡ Admin</span>
+    <span class="admin-badge" id="admin-badge" style="display:none">Admin</span>
     <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
   </header>
 
   <aside class="ramos-bar" aria-label="Filtro por ramo">
     <span class="ramos-label">Ramo:</span>
     <button class="ramo-btn activo" id="ramo-todos" onclick="setRamo('todos')">Todos</button>
-    <button class="ramo-btn" id="ramo-vial" onclick="setRamo('vial')">ðŸ›£ Viales</button>
-    <button class="ramo-btn" id="ramo-civil" onclick="setRamo('civil')">ðŸ— Civiles</button>
-    <button class="ramo-btn" id="ramo-electrica" onclick="setRamo('electrica')">âš¡ ElÃ©ctricas</button>
-    <button class="ramo-btn" id="ramo-sanitaria" onclick="setRamo('sanitaria')">ðŸš¿ Sanitarias</button>
-    <button class="ramo-btn" id="ramo-hvac" onclick="setRamo('hvac')">â„ HVAC</button>
-    <button class="ramo-btn" id="ramo-acabados" onclick="setRamo('acabados')">ðŸŽ¨ Acabados</button>
+    <button class="ramo-btn" id="ramo-vial" onclick="setRamo('vial')">Viales</button>
+    <button class="ramo-btn" id="ramo-civil" onclick="setRamo('civil')">Civiles</button>
+    <button class="ramo-btn" id="ramo-electrica" onclick="setRamo('electrica')">Eléctricas</button>
+    <button class="ramo-btn" id="ramo-sanitaria" onclick="setRamo('sanitaria')">Sanitarias</button>
+    <button class="ramo-btn" id="ramo-hvac" onclick="setRamo('hvac')">HVAC</button>
+    <button class="ramo-btn" id="ramo-acabados" onclick="setRamo('acabados')">Acabados</button>
   </aside>
 
   <nav class="tabs" aria-label="Secciones principales">
-    <div class="tab active" data-tab="dashboard" onclick="showTab('dashboard',this)">ðŸ“ˆ Dashboard</div>
-    <div class="tab" data-tab="bd" onclick="showTab('bd',this)">ðŸ“¦ Base de Datos</div>
-    <div class="tab" data-tab="pres" onclick="showTab('pres',this)">ðŸ“Š Presupuesto Activo</div>
-    <div class="tab" data-tab="guardados" onclick="showTab('guardados',this)">ðŸ—‚ Guardados</div>
-    <div class="tab" data-tab="resumen" onclick="showTab('resumen',this)">ðŸ“‹ Resumen</div>
-    <div class="tab" data-tab="imprimir" onclick="showTab('imprimir',this)">ðŸ–¨ Imprimir</div>
-    <div class="tab" data-tab="admin" id="tab-admin-btn" style="display:none" onclick="showTab('admin',this)">âš¡ Usuarios</div>
+    <div class="tab active" data-tab="dashboard" onclick="showTab('dashboard',this)">Dashboard</div>
+    <div class="tab" data-tab="bd" onclick="showTab('bd',this)">Base de Datos</div>
+    <div class="tab" data-tab="pres" onclick="showTab('pres',this)">Presupuesto Activo</div>
+    <div class="tab" data-tab="guardados" onclick="showTab('guardados',this)">Guardados</div>
+    <div class="tab" data-tab="resumen" onclick="showTab('resumen',this)">Resumen</div>
+    <div class="tab" data-tab="imprimir" onclick="showTab('imprimir',this)">Imprimir</div>
+    <div class="tab" data-tab="admin" id="tab-admin-btn" style="display:none" onclick="showTab('admin',this)">Usuarios</div>
   </nav>
 
   <main class="app-main">
@@ -126,16 +126,16 @@
     <div class="stat-cards" id="dash-stats"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
       <div class="card">
-        <div class="card-header"><h2 id="heading-dashboard">ðŸ“Š DistribuciÃ³n por CapÃ­tulo</h2></div>
+        <div class="card-header"><h2 id="heading-dashboard">Distribución por Capítulo</h2></div>
         <div class="card-body"><div class="chart-wrap"><canvas id="chart-caps"></canvas></div></div>
       </div>
       <div class="card">
-        <div class="card-header"><h2>ðŸ§© DistribuciÃ³n por Tipo de Costo</h2></div>
+        <div class="card-header"><h2>Distribución por Tipo de Costo</h2></div>
         <div class="card-body"><div class="chart-wrap"><canvas id="chart-tipos"></canvas></div></div>
       </div>
     </div>
     <div class="card">
-      <div class="card-header"><h2>ðŸ—‚ Ãšltimos Presupuestos Guardados</h2><button class="btn btn-secondary btn-sm" onclick="showTab('guardados',getTabButton('guardados'))">Ver todos â†’</button></div>
+      <div class="card-header"><h2>Últimos Presupuestos Guardados</h2><button class="btn btn-secondary btn-sm" onclick="showTab('guardados',getTabButton('guardados'))">Ver todos →</button></div>
       <div class="card-body" id="dash-recientes"></div>
     </div>
   </section>
@@ -144,25 +144,26 @@
   <section class="view" id="tab-bd" aria-labelledby="heading-bd">
     <div class="card">
       <div class="card-header">
-        <h2 id="heading-bd">ðŸ“¦ Base de Datos de Partidas</h2>
+        <h2 id="heading-bd">Base de Datos de Partidas</h2>
         <div class="btns">
-          <input id="bd-search" placeholder="Buscar cÃ³digo o descripciÃ³n..." oninput="renderBD()" style="width:200px;padding:6px 11px;font-size:12px">
-          <button class="btn btn-primary" onclick="abrirModalPartida()">ï¼‹ Nueva partida</button>
-          <button class="btn btn-secondary" onclick="abrirModalCaps()">âš™ CapÃ­tulos</button>
-          <button class="btn btn-warning" onclick="abrirImportarExcel()">ðŸ“¥ Importar Excel</button>
-          <button class="btn btn-export admin-only" onclick="exportarExcel()">ðŸ“¤ Exportar Excel</button>
+          <input id="bd-search" placeholder="Buscar código o descripción..." oninput="renderBD()" style="width:200px;padding:6px 11px;font-size:12px">
+          <button class="btn btn-secondary btn-sm" id="bd-clear-btn" onclick="limpiarBusquedaBD()" style="display:none">Limpiar</button>
+          <button class="btn btn-primary" onclick="abrirModalPartida()">+ Nueva partida</button>
+          <button class="btn btn-secondary" onclick="abrirModalCaps()">Capítulos</button>
+          <button class="btn btn-warning" onclick="abrirImportarExcel()">Importar Excel</button>
+          <button class="btn btn-export admin-only" onclick="exportarExcel()">Exportar Excel</button>
         </div>
       </div>
       <div class="card-body" style="padding-bottom:0">
-        <p class="section-lead">Cada partida concentra su resumen económico y su desglose APU en el mismo lugar. Expandí una fila para ver, editar y recalcular insumos sin salir de la base.</p>
+        <p class="section-lead" id="bd-status-text">Cada partida concentra su resumen económico y su desglose APU en el mismo lugar. Expandí una fila para ver, editar y recalcular insumos sin salir de la base.</p>
       </div>
       <div class="tbl-wrap">
         <table class="data-table">
           <thead><tr>
             <th style="width:56px">Ver</th>
-            <th>CÃ³digo</th><th>DescripciÃ³n</th><th>Ud.</th><th>Ramo</th>
-            <th class="num">Mat. â‚²</th><th class="num">M.O. â‚²</th><th class="num">Eq. â‚²</th><th class="num">Subc. â‚²</th>
-            <th class="num" style="color:var(--acento)">P. Unitario â‚²</th>
+            <th>Código</th><th>Descripción</th><th>Ud.</th><th>Ramo</th>
+            <th class="num">Mat. ₲</th><th class="num">M.O. ₲</th><th class="num">Eq. ₲</th><th class="num">Subc. ₲</th>
+            <th class="num" style="color:var(--acento)">P. Unitario ₲</th>
             <th style="width:148px">Acciones</th>
           </tr></thead>
           <tbody id="bd-tbody"><tr><td colspan="11"><div class="loading"><div class="spinner"></div>Cargando...</div></td></tr></tbody>
@@ -175,31 +176,31 @@
   <section class="view" id="tab-pres">
     <div class="card">
       <div class="card-header">
-        <h2>ðŸ“Š Presupuesto Activo</h2>
+        <h2>Presupuesto Activo</h2>
         <div class="btns">
-          <button class="btn btn-primary" onclick="abrirSelector()">ï¼‹ Agregar partida</button>
-          <button class="btn btn-secondary" onclick="guardarPresupuestoActual()" style="background:var(--acento3);color:var(--acento);border-color:var(--acento2)">ðŸ’¾ Guardar en archivo</button>
-          <button class="btn btn-danger" onclick="limpiarPres()">ðŸ—‘ Vaciar</button>
+          <button class="btn btn-primary" onclick="abrirSelector()">+ Agregar partida</button>
+          <button class="btn btn-secondary" onclick="guardarPresupuestoActual()" style="background:var(--acento3);color:var(--acento);border-color:var(--acento2)">Guardar en archivo</button>
+          <button class="btn btn-danger" onclick="limpiarPres()">Vaciar</button>
         </div>
       </div>
       <div class="card-body">
         <div class="form-grid">
           <div class="form-group"><label>Proyecto</label><input id="p-nombre" oninput="marcarUnsaved()"></div>
           <div class="form-group"><label>Cliente</label><input id="p-cliente" oninput="marcarUnsaved()"></div>
-          <div class="form-group"><label>UbicaciÃ³n</label><input id="p-ubic" oninput="marcarUnsaved()"></div>
+          <div class="form-group"><label>Ubicación</label><input id="p-ubic" oninput="marcarUnsaved()"></div>
           <div class="form-group"><label>Responsable</label><input id="p-resp" oninput="marcarUnsaved()"></div>
-          <div class="form-group"><label>NÂ° Presupuesto <button onclick="generarNroAuto()" style="background:var(--acento3);color:var(--acento);border:none;border-radius:5px;padding:1px 6px;font-size:9px;cursor:pointer;font-weight:700;margin-left:4px">AUTO</button></label><input id="p-nro" oninput="marcarUnsaved()"></div>
+          <div class="form-group"><label>N° Presupuesto <button onclick="generarNroAuto()" style="background:var(--acento3);color:var(--acento);border:none;border-radius:5px;padding:1px 6px;font-size:9px;cursor:pointer;font-weight:700;margin-left:4px">AUTO</button></label><input id="p-nro" oninput="marcarUnsaved()"></div>
           <div class="form-group"><label>Fecha</label><input id="p-fecha" type="date" oninput="marcarUnsaved()"></div>
         </div>
       </div>
       <div class="tbl-wrap">
         <table>
           <thead><tr>
-            <th>CÃ³digo</th><th>DescripciÃ³n</th><th>Ud.</th>
-            <th class="num" style="color:var(--acento)">P. Unitario â‚²</th>
+            <th>Código</th><th>Descripción</th><th>Ud.</th>
+            <th class="num" style="color:var(--acento)">P. Unitario ₲</th>
             <th class="num" style="width:130px">Cantidad</th>
-            <th class="num" style="color:var(--acento)">Total â‚²</th>
-            <th class="num" style="color:var(--amarillo);white-space:nowrap">c/ GI+B+IVA â‚²</th>
+            <th class="num" style="color:var(--acento)">Total ₲</th>
+            <th class="num" style="color:var(--amarillo);white-space:nowrap">c/ GI+B+IVA ₲</th>
             <th style="width:50px"></th>
           </tr></thead>
           <tbody id="pres-tbody"></tbody>
@@ -208,11 +209,11 @@
       <div style="display:flex;justify-content:flex-end;align-items:center;gap:20px;padding:12px 16px;background:var(--bg2);border-top:1px solid var(--borde);flex-wrap:wrap">
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:12px;color:var(--txt3)">Costo directo:</span>
-          <span id="pres-cd" style="font-size:18px;font-weight:700;color:var(--acento);font-family:'DM Mono',monospace">â‚² 0</span>
+          <span id="pres-cd" style="font-size:18px;font-weight:700;color:var(--acento);font-family:'IBM Plex Mono',monospace">₲ 0</span>
         </div>
         <div style="display:flex;align-items:center;gap:8px;padding-left:20px;border-left:1px solid var(--borde)">
           <span style="font-size:12px;color:var(--txt3)">Con GI+B+IVA <span id="pres-factor-label" style="color:var(--amarillo);font-size:10px;font-weight:700"></span>:</span>
-          <span id="pres-total" style="font-size:18px;font-weight:700;color:var(--amarillo);font-family:'DM Mono',monospace">â‚² 0</span>
+          <span id="pres-total" style="font-size:18px;font-weight:700;color:var(--amarillo);font-family:'IBM Plex Mono',monospace">₲ 0</span>
         </div>
       </div>
     </div>
@@ -222,7 +223,7 @@
   <section class="view" id="tab-guardados">
     <div class="card">
       <div class="card-header">
-        <h2>ðŸ—‚ Presupuestos Guardados</h2>
+        <h2>Presupuestos Guardados</h2>
         <input id="guardados-search" placeholder="Buscar proyecto..." oninput="renderGuardados()" style="width:200px;padding:6px 11px;font-size:12px">
       </div>
       <div class="card-body">
@@ -235,27 +236,27 @@
   <section class="view" id="tab-resumen">
     <div style="display:grid;grid-template-columns:1fr 340px;gap:14px;align-items:start">
       <div>
-        <div class="card"><div class="card-header"><h2>ðŸ“Š Por CapÃ­tulo</h2></div><div class="card-body" id="res-caps"></div></div>
-        <div class="card"><div class="card-header"><h2>ðŸ§© Por Tipo de Costo</h2></div><div class="card-body" id="res-tipos"></div></div>
+        <div class="card"><div class="card-header"><h2>Por Capítulo</h2></div><div class="card-body" id="res-caps"></div></div>
+        <div class="card"><div class="card-header"><h2>Por Tipo de Costo</h2></div><div class="card-body" id="res-tipos"></div></div>
       </div>
       <div>
         <div class="res-box" style="margin-bottom:12px">
-          <div style="font-size:10px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px">Resumen EconÃ³mico</div>
-          <div class="res-row"><span style="color:var(--txt2)">Costo Directo</span><span style="font-family:'DM Mono',monospace;font-weight:700" id="r-cd">â‚² 0</span></div>
-          <div class="res-row"><span style="color:var(--txt2)">G. Indirectos <input class="res-input" id="pct-gi" type="number" value="13" min="0" max="50" step="0.5" oninput="recalcResumen();renderPres()">%</span><span style="font-family:'DM Mono',monospace" id="r-gi">â‚² 0</span></div>
-          <div class="res-row" style="opacity:.5"><span>â”€â”€ Subtotal</span><span style="font-family:'DM Mono',monospace" id="r-sub1">â‚² 0</span></div>
-          <div class="res-row"><span style="color:var(--txt2)">Beneficio <input class="res-input" id="pct-bi" type="number" value="6" min="0" max="30" step="0.5" oninput="recalcResumen();renderPres()">%</span><span style="font-family:'DM Mono',monospace" id="r-bi">â‚² 0</span></div>
-          <div class="res-row" style="opacity:.5"><span>â”€â”€ Subtotal</span><span style="font-family:'DM Mono',monospace" id="r-sub2">â‚² 0</span></div>
-          <div class="res-row"><span style="color:var(--txt2)">IVA <input class="res-input" id="pct-iva" type="number" value="10" min="0" max="30" step="0.5" oninput="recalcResumen();renderPres()">%</span><span style="font-family:'DM Mono',monospace" id="r-iva">â‚² 0</span></div>
-          <div class="res-row total"><span>TOTAL OBRA</span><span style="font-family:'DM Mono',monospace" id="r-total">â‚² 0</span></div>
+          <div style="font-size:10px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px">Resumen Económico</div>
+          <div class="res-row"><span style="color:var(--txt2)">Costo Directo</span><span style="font-family:'IBM Plex Mono',monospace;font-weight:700" id="r-cd">₲ 0</span></div>
+          <div class="res-row"><span style="color:var(--txt2)">G. Indirectos <input class="res-input" id="pct-gi" type="number" value="13" min="0" max="50" step="0.5" oninput="recalcResumen();renderPres()">%</span><span style="font-family:'IBM Plex Mono',monospace" id="r-gi">₲ 0</span></div>
+          <div class="res-row" style="opacity:.5"><span>Subtotal</span><span style="font-family:'IBM Plex Mono',monospace" id="r-sub1">₲ 0</span></div>
+          <div class="res-row"><span style="color:var(--txt2)">Beneficio <input class="res-input" id="pct-bi" type="number" value="6" min="0" max="30" step="0.5" oninput="recalcResumen();renderPres()">%</span><span style="font-family:'IBM Plex Mono',monospace" id="r-bi">₲ 0</span></div>
+          <div class="res-row" style="opacity:.5"><span>Subtotal</span><span style="font-family:'IBM Plex Mono',monospace" id="r-sub2">₲ 0</span></div>
+          <div class="res-row"><span style="color:var(--txt2)">IVA <input class="res-input" id="pct-iva" type="number" value="10" min="0" max="30" step="0.5" oninput="recalcResumen();renderPres()">%</span><span style="font-family:'IBM Plex Mono',monospace" id="r-iva">₲ 0</span></div>
+          <div class="res-row total"><span>TOTAL OBRA</span><span style="font-family:'IBM Plex Mono',monospace" id="r-total">₲ 0</span></div>
         </div>
         <div class="card">
-          <div class="card-header"><h2>ðŸ“¤ Exportar</h2></div>
+          <div class="card-header"><h2>Exportar</h2></div>
           <div class="card-body" style="display:flex;flex-direction:column;gap:8px">
-            <button class="btn btn-export admin-only" style="justify-content:center;width:100%" onclick="exportarExcel()">ðŸ“Š Exportar Excel completo</button>
+            <button class="btn btn-export admin-only" style="justify-content:center;width:100%" onclick="exportarExcel()">Exportar Excel completo</button>
             <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--borde)" class="admin-only">
-              <p style="font-size:10px;color:var(--txt3);margin-bottom:7px">âš  Zona de peligro</p>
-              <button class="btn btn-danger btn-sm" style="width:100%;justify-content:center" onclick="resetearDatos()">ðŸ—‘ Borrar todos los datos</button>
+              <p style="font-size:10px;color:var(--txt3);margin-bottom:7px">Zona de peligro</p>
+              <button class="btn btn-danger btn-sm" style="width:100%;justify-content:center" onclick="resetearDatos()">Borrar todos los datos</button>
             </div>
           </div>
         </div>
@@ -269,24 +270,24 @@
       <div>
         <div class="card">
           <div class="card-header">
-            <h2>ðŸ¢ Empresa / Logo</h2>
-            <button class="btn btn-primary btn-sm" onclick="agregarEmpresa()">ï¼‹ Nueva</button>
+            <h2>Empresa / Logo</h2>
+            <button class="btn btn-primary btn-sm" onclick="agregarEmpresa()">+ Nueva</button>
           </div>
           <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
             <div class="form-group">
               <label>Empresa activa</label>
               <select id="empresa-sel" onchange="cargarEmpresa()" style="font-size:13px;font-weight:600;color:var(--acento)">
-                <option value="">â€” SeleccionÃ¡ una empresa â€”</option>
+                <option value="">— Seleccioná una empresa —</option>
               </select>
             </div>
             <div style="display:flex;gap:7px">
-              <button class="btn btn-secondary btn-sm" onclick="guardarEmpresaActual()">ðŸ’¾ Guardar</button>
-              <button class="btn btn-danger btn-sm" onclick="eliminarEmpresaActual()">âœ• Eliminar</button>
+              <button class="btn btn-secondary btn-sm" onclick="guardarEmpresaActual()">Guardar</button>
+              <button class="btn btn-danger btn-sm" onclick="eliminarEmpresaActual()">Eliminar</button>
             </div>
             <div style="border-top:1px solid var(--borde);padding-top:10px">
               <div class="form-group"><label>Nombre</label><input id="emp-nombre" oninput="marcarUnsaved();generarPreview()"></div>
-              <div class="form-group" style="margin-top:8px"><label>RUC / TelÃ©fono</label><input id="emp-ruc" oninput="marcarUnsaved()"></div>
-              <div class="form-group" style="margin-top:8px"><label>DirecciÃ³n</label><input id="emp-dir" oninput="marcarUnsaved()"></div>
+              <div class="form-group" style="margin-top:8px"><label>RUC / Teléfono</label><input id="emp-ruc" oninput="marcarUnsaved()"></div>
+              <div class="form-group" style="margin-top:8px"><label>Dirección</label><input id="emp-dir" oninput="marcarUnsaved()"></div>
               <div class="form-group" style="margin-top:8px">
                 <label>Logo (clic para cargar)</label>
                 <div class="logo-preview" id="logo-preview" onclick="cargarLogo()">+ Logo</div>
@@ -295,33 +296,33 @@
             </div>
             <div style="border-top:1px solid var(--borde);padding-top:10px">
               <div class="form-group"><label>Nota al pie</label><textarea id="emp-nota" rows="2" style="resize:vertical" oninput="marcarUnsaved()"></textarea></div>
-              <div class="form-group" style="margin-top:8px"><label>Plazo de ejecuciÃ³n</label><input id="emp-plazo" oninput="marcarUnsaved()"></div>
+              <div class="form-group" style="margin-top:8px"><label>Plazo de ejecución</label><input id="emp-plazo" oninput="marcarUnsaved()"></div>
               <div class="form-group" style="margin-top:8px"><label>Forma de pago</label><input id="emp-pago" oninput="marcarUnsaved()"></div>
               <div class="form-group" style="margin-top:8px"><label>Validez del presupuesto</label><input id="emp-validez" oninput="marcarUnsaved()"></div>
             </div>
           </div>
         </div>
         <div class="card">
-          <div class="card-header"><h2>ðŸ“„ Secciones a incluir</h2></div>
+          <div class="card-header"><h2>Secciones a incluir</h2></div>
           <div class="card-body" style="display:flex;flex-direction:column;gap:7px">
             <label class="print-seccion on" onclick="toggleSeccion(this,'sec-portada')"><input type="checkbox" checked><div class="print-seccion-info"><h4>Portada / Encabezado</h4><p>Logo, empresa, proyecto y cliente</p></div></label>
-            <label class="print-seccion on" onclick="toggleSeccion(this,'sec-detalle')"><input type="checkbox" checked><div class="print-seccion-info"><h4>Detalle de partidas</h4><p>Tabla con precios finales por capÃ­tulo</p></div></label>
+            <label class="print-seccion on" onclick="toggleSeccion(this,'sec-detalle')"><input type="checkbox" checked><div class="print-seccion-info"><h4>Detalle de partidas</h4><p>Tabla con precios finales por capítulo</p></div></label>
             <label class="print-seccion on" onclick="toggleSeccion(this,'sec-letras')"><input type="checkbox" checked><div class="print-seccion-info"><h4>Total en letras</h4><p>Monto escrito en palabras</p></div></label>
-            <label class="print-seccion" onclick="toggleSeccion(this,'sec-nota-pct')"><input type="checkbox"><div class="print-seccion-info"><h4>Nota de porcentajes</h4><p>Muestra quÃ© % se incluyÃ³</p></div></label>
-            <label class="print-seccion" onclick="toggleSeccion(this,'sec-caps')"><input type="checkbox"><div class="print-seccion-info"><h4>Resumen por capÃ­tulo</h4><p>Totales agrupados por rubro</p></div></label>
-            <label class="print-seccion" onclick="toggleSeccion(this,'sec-apu')"><input type="checkbox"><div class="print-seccion-info"><h4>AnÃ¡lisis de Precios Unitarios</h4><p>Desglose de insumos tipo Mandua</p></div></label>
+            <label class="print-seccion" onclick="toggleSeccion(this,'sec-nota-pct')"><input type="checkbox"><div class="print-seccion-info"><h4>Nota de porcentajes</h4><p>Muestra qué % se incluyó</p></div></label>
+            <label class="print-seccion" onclick="toggleSeccion(this,'sec-caps')"><input type="checkbox"><div class="print-seccion-info"><h4>Resumen por capítulo</h4><p>Totales agrupados por rubro</p></div></label>
+            <label class="print-seccion" onclick="toggleSeccion(this,'sec-apu')"><input type="checkbox"><div class="print-seccion-info"><h4>Análisis de Precios Unitarios</h4><p>Desglose de insumos tipo Mandua</p></div></label>
             <label class="print-seccion" onclick="toggleSeccion(this,'sec-condiciones')"><input type="checkbox"><div class="print-seccion-info"><h4>Condiciones generales</h4><p>Plazo, forma de pago y validez</p></div></label>
             <label class="print-seccion on" onclick="toggleSeccion(this,'sec-firmas')"><input type="checkbox" checked><div class="print-seccion-info"><h4>Firmas</h4><p>Espacio para firma del cliente</p></div></label>
             <label class="print-seccion" onclick="toggleSeccion(this,'sec-nota')"><input type="checkbox"><div class="print-seccion-info"><h4>Nota al pie</h4><p>Texto libre de condiciones</p></div></label>
           </div>
         </div>
-        <button class="btn btn-export" style="width:100%;justify-content:center;font-size:14px;padding:13px;border-radius:var(--radio-lg)" onclick="imprimirDocumento()">ðŸ–¨ Generar e Imprimir / PDF</button>
+        <button class="btn btn-export" style="width:100%;justify-content:center;font-size:14px;padding:13px;border-radius:var(--radio-lg)" onclick="imprimirDocumento()">Generar e Imprimir / PDF</button>
       </div>
       <div class="card">
-        <div class="card-header"><h2>ðŸ‘ Vista previa del documento</h2><button class="btn btn-secondary btn-sm" onclick="generarPreview()">â†º Actualizar</button></div>
+        <div class="card-header"><h2>Vista previa del documento</h2><button class="btn btn-secondary btn-sm" onclick="generarPreview()">↺ Actualizar</button></div>
         <div class="card-body" style="background:#ccc;padding:16px;border-radius:0 0 var(--radio-lg) var(--radio-lg)">
           <div id="preview-doc" style="background:#fff;color:#111;padding:28px;border-radius:6px;box-shadow:0 4px 24px rgba(0,0,0,.4);min-height:400px;font-family:Arial,sans-serif;font-size:9.5pt">
-            <p style="color:#999;text-align:center;padding:40px 0">La vista previa aparece acÃ¡.<br>CompletÃ¡ los datos del presupuesto y clic en <strong>â†º Actualizar</strong>.</p>
+            <p style="color:#999;text-align:center;padding:40px 0">La vista previa aparece acá.<br>Completá los datos del presupuesto y hacé clic en <strong>↺ Actualizar</strong>.</p>
           </div>
         </div>
       </div>
@@ -331,13 +332,13 @@
   <!-- â•â• ADMIN â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
   <section class="view" id="tab-admin">
     <div class="card">
-      <div class="card-header"><h2>âš¡ Panel de AdministraciÃ³n â€” Usuarios</h2></div>
+      <div class="card-header"><h2>Panel de Administración — Usuarios</h2></div>
       <div class="card-body">
-        <p style="font-size:12px;color:var(--txt2);margin-bottom:16px">Los usuarios se crean desde la consola de Firebase â†’ Authentication â†’ Agregar usuario.</p>
+        <p style="font-size:12px;color:var(--txt2);margin-bottom:16px">Los usuarios se crean desde la consola de Firebase → Authentication → Agregar usuario.</p>
         <div id="users-list"><div class="loading"><div class="spinner"></div>Cargando usuarios...</div></div>
         <div style="margin-top:14px;padding:12px;background:var(--bg2);border-radius:var(--radio);border:1px solid var(--borde)">
-          <p style="font-size:11px;color:var(--txt3);margin-bottom:8px">Para agregar un nuevo usuario: <strong style="color:var(--acento)">console.firebase.google.com</strong> â†’ Authentication â†’ Agregar usuario</p>
-          <a href="https://console.firebase.google.com" target="_blank" class="btn btn-secondary btn-sm">Abrir consola Firebase â†’</a>
+          <p style="font-size:11px;color:var(--txt3);margin-bottom:8px">Desde este panel podés bloquear, habilitar y eliminar el registro del usuario en la app. Si querés borrar también su cuenta de Authentication, seguí usando la consola de Firebase.</p>
+          <a href="https://console.firebase.google.com" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">Abrir consola Firebase →</a>
         </div>
       </div>
     </div>
@@ -354,34 +355,34 @@
   <div class="modal">
     <h2 id="mp-title">Nueva Partida</h2>
     <div class="form-grid">
-      <div class="form-group"><label>CapÃ­tulo</label><select id="f-cap" onchange="autoCod()"></select></div>
-      <div class="form-group"><label>CÃ³digo</label><input id="f-cod" class="cod" placeholder="ej: 03.08" maxlength="8"></div>
+      <div class="form-group"><label>Capítulo</label><select id="f-cap" onchange="autoCod()"></select></div>
+      <div class="form-group"><label>Código</label><input id="f-cod" class="cod" placeholder="ej: 03.08" maxlength="8"></div>
       <div class="form-group"><label>Ramo</label>
         <select id="f-ramo">
           <option value="todos">Todos</option><option value="vial">Obras Viales</option>
-          <option value="civil">Obras Civiles</option><option value="electrica">ElÃ©ctricas</option>
+          <option value="civil">Obras Civiles</option><option value="electrica">Eléctricas</option>
           <option value="sanitaria">Sanitarias</option><option value="hvac">HVAC</option>
           <option value="acabados">Acabados</option>
         </select>
       </div>
       <div class="form-group"><label>Unidad</label>
-        <select id="f-u"><option>mÂ²</option><option>mÂ³</option><option>ml</option><option>kg</option><option>un</option><option>gl</option><option>hr</option><option>jor</option><option>bo</option><option>l</option><option>pq</option><option>dÃ­a</option></select>
+        <select id="f-u"><option>m²</option><option>m³</option><option>ml</option><option>kg</option><option>un</option><option>gl</option><option>hr</option><option>jor</option><option>bo</option><option>l</option><option>pq</option><option>día</option></select>
       </div>
     </div>
-    <div class="form-group" style="margin-bottom:12px"><label>DescripciÃ³n</label><textarea id="f-desc" rows="2" style="resize:vertical"></textarea></div>
+    <div class="form-group" style="margin-bottom:12px"><label>Descripción</label><textarea id="f-desc" rows="2" style="resize:vertical"></textarea></div>
     <div class="form-grid">
-      <div class="form-group"><label>Materiales (â‚²)</label><input id="f-mat" type="number" min="0" value="0" oninput="updPU()"></div>
-      <div class="form-group"><label>Mano de Obra (â‚²)</label><input id="f-mo" type="number" min="0" value="0" oninput="updPU()"></div>
-      <div class="form-group"><label>Equipo (â‚²)</label><input id="f-eq" type="number" min="0" value="0" oninput="updPU()"></div>
-      <div class="form-group"><label>Subcontrato (â‚²)</label><input id="f-sub" type="number" min="0" value="0" oninput="updPU()"></div>
+      <div class="form-group"><label>Materiales (₲)</label><input id="f-mat" type="number" min="0" value="0" oninput="updPU()"></div>
+      <div class="form-group"><label>Mano de Obra (₲)</label><input id="f-mo" type="number" min="0" value="0" oninput="updPU()"></div>
+      <div class="form-group"><label>Equipo (₲)</label><input id="f-eq" type="number" min="0" value="0" oninput="updPU()"></div>
+      <div class="form-group"><label>Subcontrato (₲)</label><input id="f-sub" type="number" min="0" value="0" oninput="updPU()"></div>
     </div>
     <div style="background:var(--bg3);border-radius:var(--radio);padding:10px;display:flex;justify-content:space-between;align-items:center">
       <span style="font-size:12px;color:var(--txt3)">Precio Unitario Total:</span>
-      <span id="f-pu-show" style="font-size:18px;font-weight:700;color:var(--acento);font-family:'DM Mono',monospace">â‚² 0</span>
+      <span id="f-pu-show" style="font-size:18px;font-weight:700;color:var(--acento);font-family:'IBM Plex Mono',monospace">₲ 0</span>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="cerrarModal('modal-partida')">Cancelar</button>
-      <button class="btn btn-primary" onclick="guardarPartida()">âœ“ Guardar partida</button>
+      <button class="btn btn-primary" onclick="guardarPartida()">Guardar partida</button>
     </div>
   </div>
 </div>
@@ -392,19 +393,19 @@
     <h2 id="mi-title">Agregar Insumo</h2>
     <div class="form-group" style="margin-bottom:12px"><label>Partida</label><select id="ai-partida" style="font-size:12px"></select></div>
     <div class="form-grid">
-      <div class="form-group" style="grid-column:1/-1"><label>DescripciÃ³n del insumo</label><input id="ai-desc" placeholder="ej: Cemento Portland 50kg"></div>
+      <div class="form-group" style="grid-column:1/-1"><label>Descripción del insumo</label><input id="ai-desc" placeholder="ej: Cemento Portland 50kg"></div>
       <div class="form-group"><label>Unidad</label>
-        <select id="ai-u"><option>un</option><option>bo</option><option>mÂ²</option><option>mÂ³</option><option>ml</option><option>kg</option><option>l</option><option>gl</option><option>hr</option><option>jor</option><option>dÃ­a</option><option>pq</option></select>
+        <select id="ai-u"><option>un</option><option>bo</option><option>m²</option><option>m³</option><option>ml</option><option>kg</option><option>l</option><option>gl</option><option>hr</option><option>jor</option><option>día</option><option>pq</option></select>
       </div>
       <div class="form-group"><label>Tipo</label>
         <select id="ai-tipo"><option value="M">Material</option><option value="L">Mano de Obra</option><option value="E">Equipo</option><option value="S">Subcontrato</option></select>
       </div>
       <div class="form-group"><label>Cantidad / unidad partida</label><input id="ai-qty" type="number" min="0.001" step="0.001" value="1"></div>
-      <div class="form-group"><label>Precio unit. insumo (â‚²)</label><input id="ai-pu" type="number" min="0" value="0"></div>
+      <div class="form-group"><label>Precio unit. insumo (₲)</label><input id="ai-pu" type="number" min="0" value="0"></div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="cerrarModal('modal-insumo')">Cancelar</button>
-      <button class="btn btn-primary" onclick="guardarInsumo()">âœ“ Guardar insumo</button>
+      <button class="btn btn-primary" onclick="guardarInsumo()">Guardar insumo</button>
     </div>
   </div>
 </div>
@@ -413,14 +414,14 @@
 <div class="modal-bg" id="modal-sel">
   <div class="modal" style="max-width:800px">
     <h2>Agregar partida al presupuesto</h2>
-    <input id="sel-q" placeholder="Buscar cÃ³digo o descripciÃ³n..." oninput="renderSel()" style="width:100%;margin-bottom:10px">
+    <input id="sel-q" placeholder="Buscar código o descripción..." oninput="renderSel()" style="width:100%;margin-bottom:10px">
     <div style="max-height:420px;overflow-y:auto;border:1px solid var(--borde);border-radius:var(--radio)">
       <table style="width:100%;border-collapse:collapse;min-width:400px">
         <thead><tr>
-          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);top:0;position:sticky;z-index:1">CÃ³digo</th>
-          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);top:0;position:sticky;z-index:1">DescripciÃ³n</th>
+          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);top:0;position:sticky;z-index:1">Código</th>
+          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);top:0;position:sticky;z-index:1">Descripción</th>
           <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);top:0;position:sticky;z-index:1">Ud.</th>
-          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);text-align:right;top:0;position:sticky;z-index:1">P.Unit â‚²</th>
+          <th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);text-align:right;top:0;position:sticky;z-index:1">P.Unit ₲</th>
           <th style="padding:7px 12px;background:var(--bg2);font-size:10px;top:0;position:sticky;z-index:1"></th>
         </tr></thead>
         <tbody id="sel-tbody"></tbody>
@@ -430,16 +431,16 @@
   </div>
 </div>
 
-<!-- Modal CapÃ­tulos -->
+<!-- Modal Capítulos -->
 <div class="modal-bg" id="modal-caps">
   <div class="modal" style="max-width:700px">
-    <h2>âš™ GestiÃ³n de CapÃ­tulos</h2>
-    <p style="font-size:11px;color:var(--txt3);margin-bottom:14px">Los capÃ­tulos agrupan las partidas. PodÃ©s editar nombre, color y ramos asociados.</p>
+    <h2>Gestión de Capítulos</h2>
+    <p style="font-size:11px;color:var(--txt3);margin-bottom:14px">Los capítulos agrupan las partidas. Podés editar nombre, color y ramos asociados.</p>
     <div id="caps-list" style="margin-bottom:14px"></div>
-    <button class="btn btn-primary" onclick="agregarCapitulo()">ï¼‹ Nuevo capÃ­tulo</button>
+    <button class="btn btn-primary" onclick="agregarCapitulo()">+ Nuevo capítulo</button>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="cerrarModal('modal-caps')">Cerrar</button>
-      <button class="btn btn-export" onclick="guardarCapitulos()">âœ“ Guardar capÃ­tulos</button>
+      <button class="btn btn-export" onclick="guardarCapitulos()">Guardar capítulos</button>
     </div>
   </div>
 </div>
@@ -447,11 +448,11 @@
 <!-- Modal Importar Excel -->
 <div class="modal-bg" id="modal-importar">
   <div class="modal" style="max-width:640px">
-    <h2>ðŸ“¥ Importar Partidas desde Excel</h2>
-    <p style="font-size:12px;color:var(--txt2);margin-bottom:14px">El archivo Excel debe tener las columnas: <strong style="color:var(--acento)">CapÃ­tulo, CÃ³digo, DescripciÃ³n, Unidad, Materiales, Mano Obra, Equipo, Subcontrato</strong></p>
+    <h2>Importar Partidas desde Excel</h2>
+    <p style="font-size:12px;color:var(--txt2);margin-bottom:14px">El archivo Excel debe tener las columnas: <strong style="color:var(--acento)">Capítulo, Código, Descripción, Unidad, Materiales, Mano Obra, Equipo, Subcontrato</strong></p>
     <div class="import-drop-zone" id="import-drop-zone" onclick="document.getElementById('import-file').click()" ondragover="dragOver(event)" ondrop="dropImport(event)" ondragleave="dragLeave(event)">
-      <div style="font-size:32px">ðŸ“‹</div>
-      <p>Clic para seleccionar o arrastrÃ¡ el archivo Excel aquÃ­</p>
+      <div style="font-size:32px">XLS</div>
+      <p>Hacé clic para seleccionar o arrastrá el archivo Excel aquí</p>
       <p style="font-size:11px;margin-top:4px">Formatos: .xlsx, .xls, .csv</p>
       <input type="file" id="import-file" accept=".xlsx,.xls,.csv" style="display:none" onchange="procesarImportExcel(event)">
     </div>
@@ -463,7 +464,7 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="cerrarModal('modal-importar')">Cancelar</button>
-      <button class="btn btn-primary" id="btn-confirmar-import" style="display:none" onclick="confirmarImport()">âœ“ Importar partidas</button>
+      <button class="btn btn-primary" id="btn-confirmar-import" style="display:none" onclick="confirmarImport()">Importar partidas</button>
     </div>
   </div>
 </div>

@@ -11,51 +11,51 @@ function renderDashboard(){
       <div class="stat-card-label">Costo Directo</div>
       <div class="stat-card-value" style="color:var(--acento);font-size:18px">${fmt(cd)}</div>
       <div class="stat-card-sub">Presupuesto activo</div>
-      <div class="stat-card-accent">💰</div>
+      <div class="stat-card-accent">Gs</div>
     </div>
     <div class="stat-card">
       <div class="stat-card-label">Total con Gastos + IVA</div>
       <div class="stat-card-value" style="color:var(--amarillo);font-size:18px">${fmt(total)}</div>
       <div class="stat-card-sub">GI ${gi}% + B ${bi}% + IVA ${iva}%</div>
-      <div class="stat-card-accent">📊</div>
+      <div class="stat-card-accent">Tot</div>
     </div>
     <div class="stat-card">
       <div class="stat-card-label">Partidas en presupuesto</div>
       <div class="stat-card-value">${PRESUPUESTO.length}</div>
       <div class="stat-card-sub">de ${DB.length} en base de datos</div>
-      <div class="stat-card-accent">📋</div>
+      <div class="stat-card-accent">Items</div>
     </div>
     <div class="stat-card">
       <div class="stat-card-label">Presupuestos guardados</div>
       <div class="stat-card-value">${PRESUPUESTOS_GUARDADOS.length}</div>
       <div class="stat-card-sub">proyectos archivados</div>
-      <div class="stat-card-accent">🗂</div>
+      <div class="stat-card-accent">Arch</div>
     </div>
   `;
 
   const byCap = {};
   PRESUPUESTO.forEach(it => {
     const p = DB.find(x => x.id === it.pid);
-    if (!p) return;
-    if (!byCap[p.cap]) byCap[p.cap] = 0;
+    if(!p) return;
+    if(!byCap[p.cap]) byCap[p.cap] = 0;
     byCap[p.cap] += pu(p) * it.qty;
   });
 
   const capKeys = Object.keys(byCap).sort();
   const capLabels = capKeys.map(k => {
     const n = capOf(k).name;
-    return n.length > 22 ? `${n.substring(0, 21)}…` : n;
+    return n.length > 22 ? `${n.substring(0, 21)}...` : n;
   });
   const capData = capKeys.map(k => Math.round(byCap[k]));
   const capColors = capKeys.map(k => capOf(k).color);
 
   const ctxCaps = document.getElementById('chart-caps');
-  if (ctxCaps) {
-    if (dashCharts.caps) {
+  if(ctxCaps){
+    if(dashCharts.caps){
       try { dashCharts.caps.destroy(); } catch (e) {}
     }
-    if (capData.length) {
-      try {
+    if(capData.length){
+      try{
         dashCharts.caps = new Chart(ctxCaps, {
           type: 'bar',
           data: {
@@ -75,28 +75,28 @@ function renderDashboard(){
               legend: { display: false },
               tooltip: {
                 callbacks: {
-                  label: ctx => `₲ ${Math.round(ctx.raw).toLocaleString('es-PY')}`,
+                  label: ctx => `Gs. ${Math.round(ctx.raw).toLocaleString('es-PY')}`,
                 },
               },
             },
             scales: {
-              x: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#527A61', font: { size: 10 } } },
+              x: { grid: { color: 'rgba(255,255,255,.05)' }, ticks: { color: '#8aa7be', font: { size: 10 } } },
               y: {
                 grid: { color: 'rgba(255,255,255,.05)' },
                 ticks: {
-                  color: '#527A61',
+                  color: '#8aa7be',
                   font: { size: 10 },
-                  callback: v => `₲ ${Math.round(v / 1000).toLocaleString('es-PY')}k`,
+                  callback: v => `Gs. ${Math.round(v / 1000).toLocaleString('es-PY')}k`,
                 },
               },
             },
           },
         });
-      } catch (e) {
+      }catch(e){
         console.warn('Chart caps error:', e);
       }
-    } else {
-      ctxCaps.parentElement.innerHTML = '<div class="empty-state" style="height:240px;display:flex;flex-direction:column;justify-content:center"><div class="icon">📊</div><p>Sin datos en el presupuesto activo</p></div>';
+    }else{
+      ctxCaps.parentElement.innerHTML = '<div class="empty-state" style="height:240px;display:flex;flex-direction:column;justify-content:center"><div class="icon">+</div><p>Sin datos en el presupuesto activo</p></div>';
     }
   }
 
@@ -118,15 +118,15 @@ function renderDashboard(){
   }, 0);
 
   const ctxTipos = document.getElementById('chart-tipos');
-  if (ctxTipos) {
-    if (dashCharts.tipos) {
+  if(ctxTipos){
+    if(dashCharts.tipos){
       try { dashCharts.tipos.destroy(); } catch (e) {}
     }
     const tiposData = [Math.round(matT), Math.round(moT), Math.round(eqT), Math.round(subT)].filter(v => v > 0);
     const tiposLabels = ['Materiales', 'Mano de Obra', 'Equipo', 'Subcontrato'].filter((_, i) => [matT, moT, eqT, subT][i] > 0);
-    const tiposColors = ['#4AABEF', '#1DBA7B', '#D4B820', '#E89020'].filter((_, i) => [matT, moT, eqT, subT][i] > 0);
-    if (tiposData.length) {
-      try {
+    const tiposColors = ['#77c8ff', '#5ec8ff', '#D4B820', '#E89020'].filter((_, i) => [matT, moT, eqT, subT][i] > 0);
+    if(tiposData.length){
+      try{
         dashCharts.tipos = new Chart(ctxTipos, {
           type: 'doughnut',
           data: {
@@ -143,48 +143,52 @@ function renderDashboard(){
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: { position: 'bottom', labels: { color: '#8FB09A', font: { size: 11 }, padding: 14 } },
+              legend: { position: 'bottom', labels: { color: '#a7bfd3', font: { size: 11 }, padding: 14 } },
               tooltip: {
                 callbacks: {
-                  label: ctx => `${ctx.label}: ₲ ${Math.round(ctx.raw).toLocaleString('es-PY')} (${(ctx.raw / (matT + moT + eqT + subT) * 100).toFixed(1)}%)`,
+                  label: ctx => `${ctx.label}: Gs. ${Math.round(ctx.raw).toLocaleString('es-PY')} (${((ctx.raw / (matT + moT + eqT + subT)) * 100).toFixed(1)}%)`,
                 },
               },
             },
             cutout: '60%',
           },
         });
-      } catch (e) {
+      }catch(e){
         console.warn('Chart tipos error:', e);
       }
-    } else {
-      ctxTipos.parentElement.innerHTML = '<div class="empty-state" style="height:240px;display:flex;flex-direction:column;justify-content:center"><div class="icon">🧩</div><p>Sin datos de costos</p></div>';
+    }else{
+      ctxTipos.parentElement.innerHTML = '<div class="empty-state" style="height:240px;display:flex;flex-direction:column;justify-content:center"><div class="icon">+</div><p>Sin datos de costos</p></div>';
     }
   }
 
   const recientes = PRESUPUESTOS_GUARDADOS.slice(0, 5);
-  if (!recientes.length) {
-    document.getElementById('dash-recientes').innerHTML = '<div class="empty-state"><div class="icon">🗂</div><h3>Sin presupuestos guardados</h3><p>Guardá el presupuesto activo para verlos aquí</p></div>';
+  if(!recientes.length){
+    document.getElementById('dash-recientes').innerHTML = '<div class="empty-state"><div class="icon">+</div><h3>Sin presupuestos guardados</h3><p>Guarda el presupuesto activo para verlos aqui</p></div>';
     return;
   }
 
   let html = '<div class="tbl-wrap-fixed" style="max-height:280px"><table style="width:100%;border-collapse:collapse"><thead><tr>';
-  ['Proyecto', 'Cliente', 'N°', 'Fecha', 'Total ₲'].forEach(h => {
+  ['Proyecto', 'Cliente', 'Nro.', 'Fecha', 'Total Gs.'].forEach(h => {
     html += `<th style="padding:7px 12px;background:var(--bg2);font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em">${h}</th>`;
   });
   html += '</tr></thead><tbody>';
+
   recientes.forEach((p, idx) => {
     const totalPres = p.items.reduce((a, it) => {
       const db = DB.find(x => x.id === it.pid);
       return a + (db ? pu(db) * it.qty : 0);
     }, 0);
-    html += `<tr style="cursor:pointer" onclick="abrirPresupuestoGuardado(${idx})" onmouseover="this.querySelectorAll('td').forEach(td=>td.style.background='rgba(255,255,255,.02)')" onmouseout="this.querySelectorAll('td').forEach(td=>td.style.background='')">
-      <td style="padding:8px 12px;font-size:13px;font-weight:600">${p.nombre || 'Sin nombre'}</td>
-      <td style="padding:8px 12px;font-size:12px;color:var(--txt2)">${p.cliente || '—'}</td>
-      <td style="padding:8px 12px;font-size:11px;font-family:'DM Mono',monospace;color:var(--acento)">${p.nro || '—'}</td>
-      <td style="padding:8px 12px;font-size:11px;color:var(--txt3)">${p.fecha || '—'}</td>
-      <td style="padding:8px 12px;text-align:right;font-weight:700;color:var(--acento);font-family:'DM Mono',monospace">₲ ${fmtN(totalPres)}</td>
-    </tr>`;
+    html += `
+      <tr style="cursor:pointer" onclick="abrirPresupuestoGuardado(${idx})" onmouseover="this.querySelectorAll('td').forEach(td=>td.style.background='rgba(255,255,255,.02)')" onmouseout="this.querySelectorAll('td').forEach(td=>td.style.background='')">
+        <td style="padding:8px 12px;font-size:13px;font-weight:600">${p.nombre || 'Sin nombre'}</td>
+        <td style="padding:8px 12px;font-size:12px;color:var(--txt2)">${p.cliente || '-'}</td>
+        <td style="padding:8px 12px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--acento)">${p.nro || '-'}</td>
+        <td style="padding:8px 12px;font-size:11px;color:var(--txt3)">${p.fecha || '-'}</td>
+        <td style="padding:8px 12px;text-align:right;font-weight:700;color:var(--acento);font-family:'IBM Plex Mono',monospace">Gs. ${fmtN(totalPres)}</td>
+      </tr>
+    `;
   });
+
   html += '</tbody></table></div>';
   document.getElementById('dash-recientes').innerHTML = html;
 }

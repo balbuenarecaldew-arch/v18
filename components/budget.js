@@ -147,6 +147,8 @@ function updQtyRapido(pid, val){
   });
   document.getElementById('pres-cd').textContent = fmt(cd);
   document.getElementById('pres-total').textContent = fmt(Math.round(cd * factor));
+  if(typeof recalcResumen === 'function') recalcResumen();
+  if(typeof renderDashboard === 'function') renderDashboard();
 }
 
 function updQty(pid, val, prevVal){

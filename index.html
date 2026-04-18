@@ -82,14 +82,14 @@
     </div>
     <!-- Buscador global -->
     <div class="global-search-wrap">
-      <span class="gs-icon">Buscar</span>
+      <span class="gs-icon">⌕</span>
       <input type="text" id="global-search" placeholder="Buscar partidas, presupuestos..." oninput="buscarGlobal(this.value)" onfocus="mostrarResultadosGlobal()" onblur="setTimeout(()=>ocultarResultadosGlobal(),200)">
       <div id="global-results"></div>
     </div>
     <div class="topbar-spacer"></div>
     <div class="sync-indicator" id="sync-indicator"><div class="sync-dot"></div><span id="sync-text">sincronizado</span></div>
     <button id="undo-btn" onclick="deshacerUltima()" title="Sin acciones para deshacer">↺ <span>Deshacer</span></button>
-    <button class="save-btn saved" id="save-btn" onclick="guardarFirebase()">₲ <span>Guardar</span></button>
+    <button class="save-btn saved" id="save-btn" onclick="guardarFirebase()"><span>Guardar</span></button>
     <span class="badge-count" id="badge-count">0 partidas</span>
     <div class="topbar-user">
       <div class="topbar-dot"></div>

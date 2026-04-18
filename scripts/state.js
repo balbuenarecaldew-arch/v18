@@ -2,13 +2,13 @@
   {id:'01',name:'Trabajos previos y demoliciones',color:'#4A7C5A',ramos:['todos','civil','vial']},
   {id:'02',name:'Movimiento de tierras',color:'#8B6A14',ramos:['todos','civil','vial']},
   {id:'03',name:'Fundaciones y estructuras',color:'#9B2020',ramos:['todos','civil','vial']},
-  {id:'04',name:'MamposterÃ­a y albaÃ±ilerÃ­a',color:'#8B5A1A',ramos:['todos','civil']},
+  {id:'04',name:'Mampostería y albañilería',color:'#8B5A1A',ramos:['todos','civil']},
   {id:'05',name:'Cubierta y techos',color:'#1A5A8B',ramos:['todos','civil']},
   {id:'06',name:'Revestimientos y terminaciones',color:'#3A7A30',ramos:['todos','civil','acabados']},
-  {id:'07',name:'CarpinterÃ­a y vidrierÃ­a',color:'#8A3070',ramos:['todos','civil','acabados']},
+  {id:'07',name:'Carpintería y vidriería',color:'#8A3070',ramos:['todos','civil','acabados']},
   {id:'08',name:'Instalaciones sanitarias',color:'#1A7A5A',ramos:['todos','civil','sanitaria']},
-  {id:'09',name:'Instalaciones elÃ©ctricas',color:'#5A4AAA',ramos:['todos','civil','electrica']},
-  {id:'10',name:'Instalaciones HVAC y refrigeraciÃ³n',color:'#1A5A8B',ramos:['todos','civil','hvac']},
+  {id:'09',name:'Instalaciones eléctricas',color:'#5A4AAA',ramos:['todos','civil','electrica']},
+  {id:'10',name:'Instalaciones HVAC y refrigeración',color:'#1A5A8B',ramos:['todos','civil','hvac']},
   {id:'11',name:'Pinturas e impermeabilizaciones',color:'#8A6A14',ramos:['todos','civil','acabados']},
   {id:'12',name:'Pavimentos y obras viales',color:'#6A6A6A',ramos:['todos','vial']},
   {id:'13',name:'Paisajismo y exteriores',color:'#2A7A55',ramos:['todos','civil']},
@@ -27,15 +27,15 @@ let appAbierta = false;
 let SECC_STATE = {};
 let _importData = [];
 let dashCharts = {};
-let _ignorarProximoSnapshotPres = 0; // timestamp â€” ignorar snapshots hasta este momento
+let _ignorarProximoSnapshotPres = 0; // timestamp - ignorar snapshots hasta este momento
 let _initialLoadDone = false; // solo restaurar config en primer load
 let _firestoreUnsub = null; // unsubscriber del listener de Firestore
 
 // Helpers
 const pu  = p => (p.mat||0)+(p.mo||0)+(p.eq||0)+(p.sub||0);
-const fmt  = n => 'â‚² '+Math.round(n).toLocaleString('es-PY');
+const fmt  = n => '₲ ' + Math.round(n).toLocaleString('es-PY');
 const fmtN = n => Math.round(n).toLocaleString('es-PY');
-const capOf = id => CAPS.find(c=>c.id===id) || {name:'Sin capÃ­tulo',color:'#888',ramos:['todos']};
+const capOf = id => CAPS.find(c=>c.id===id) || {name:'Sin capítulo',color:'#888',ramos:['todos']};
 
 // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 // OFFLINE DETECTION

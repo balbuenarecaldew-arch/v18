@@ -1,4 +1,4 @@
-let _renderBDTimer = null;
+﻿let _renderBDTimer = null;
 let expandedPartidas = new Set();
 
 const APU_TYPE_META = {
@@ -42,18 +42,26 @@ function renderBD(){
   _renderBDTimer = setTimeout(_renderBDNow, 60);
 }
 
+function limpiarBusquedaBD(){
+  const input = document.getElementById('bd-search');
+  if(input) input.value = '';
+  renderBD();
+}
+
 function _renderBDNow(){
   document.getElementById('badge-count').textContent = `${DB.length} partidas`;
   const lista = filtrarDB();
   const q = (document.getElementById('bd-search')?.value || '').toLowerCase();
+  const clearBtn = document.getElementById('bd-clear-btn');
+  const status = document.getElementById('bd-status-text');
   let html = '';
   let prevCap = null;
 
-  if(!q && ramoActivo === 'todos'){
-    const capsConPartidas = new Set(lista.map(p=>p.cap));
-    CAPS.filter(cap=>!capsConPartidas.has(cap.id)).forEach(cap=>{
-      html += `<tr class="cap-row" style="border-left-color:${cap.color}"><td colspan="11" style="background:${cap.color}99">&nbsp;${cap.id} — ${cap.name} <span style="font-size:10px;opacity:.72;font-weight:500">(vacío — agregá partidas con Nueva partida)</span></td></tr>`;
-    });
+  if(clearBtn) clearBtn.style.display = q ? 'inline-flex' : 'none';
+  if(status){
+    status.textContent = q
+      ? `Mostrando ${lista.length} de ${DB.length} partidas para "${q}". Limpiá el filtro para ver toda la base.`
+      : 'Cada partida concentra su resumen económico y su desglose APU en el mismo lugar. Expandí una fila para ver, editar y recalcular insumos sin salir de la base.';
   }
 
   lista.forEach(p=>{
@@ -67,19 +75,19 @@ function _renderBDNow(){
       ? `<span class="chip" style="background:${RAMO_COLORS[p.ramo] || '#888'}22;color:${RAMO_COLORS[p.ramo] || '#888'}">${p.ramo}</span>`
       : '<span class="chip chip-muted">general</span>';
     const presBadge = enPres
-      ? `<span class="chip chip-success">En presupuesto · ${qtyPres % 1 === 0 ? qtyPres : qtyPres.toFixed(2)}</span>`
+      ? `<span class="chip chip-success">En presupuesto Â· ${qtyPres % 1 === 0 ? qtyPres : qtyPres.toFixed(2)}</span>`
       : '';
 
     if(p.cap !== prevCap){
       prevCap = p.cap;
-      html += `<tr class="cap-row" style="border-left-color:${cap.color}"><td colspan="11" style="background:${cap.color}CC">&nbsp;${p.cap} — ${cap.name}</td></tr>`;
+      html += `<tr class="cap-row" style="border-left-color:${cap.color}"><td colspan="11" style="background:${cap.color}CC">&nbsp;${p.cap} â€” ${cap.name}</td></tr>`;
     }
 
     html += `
       <tr class="db-summary-row" style="${rowBg}" data-pid="${p.id}">
         <td>
           <button class="accordion-toggle ${estaExpandida ? 'is-open' : ''}" type="button" onclick="expandirPartida(${p.id})" aria-expanded="${estaExpandida}" aria-controls="apu-panel-${p.id}" title="${estaExpandida ? 'Ocultar' : 'Mostrar'} desglose APU">
-            <span>${estaExpandida ? '−' : '+'}</span>
+            <span>${estaExpandida ? 'âˆ’' : '+'}</span>
           </button>
         </td>
         <td><code class="cell-code">${p.cod}</code></td>
@@ -89,10 +97,10 @@ function _renderBDNow(){
         </td>
         <td class="cell-unit">${p.u}</td>
         <td>${ramoBadge}</td>
-        <td class="num" style="color:var(--azul)">${p.mat>0?fmtN(p.mat):'—'}</td>
-        <td class="num" style="color:var(--acento)">${p.mo>0?fmtN(p.mo):'—'}</td>
-        <td class="num" style="color:var(--amarillo)">${p.eq>0?fmtN(p.eq):'—'}</td>
-        <td class="num" style="color:var(--naranja)">${p.sub>0?fmtN(p.sub):'—'}</td>
+        <td class="num" style="color:var(--azul)">${p.mat>0?fmtN(p.mat):'â€”'}</td>
+        <td class="num" style="color:var(--acento)">${p.mo>0?fmtN(p.mo):'â€”'}</td>
+        <td class="num" style="color:var(--amarillo)">${p.eq>0?fmtN(p.eq):'â€”'}</td>
+        <td class="num" style="color:var(--naranja)">${p.sub>0?fmtN(p.sub):'â€”'}</td>
         <td class="num total-cell">${fmtN(pu(p))}</td>
         <td>
           <div class="table-actions">
@@ -110,7 +118,7 @@ function _renderBDNow(){
   });
 
   if(!lista.length){
-    html = `<tr><td colspan="11"><div class="empty-state" style="padding:48px 0"><div class="icon">ðŸ”</div><h3>Sin partidas</h3><p>Cambiá el filtro actual o agregá una nueva partida.</p></div></td></tr>`;
+    html = `<tr><td colspan="11"><div class="empty-state" style="padding:48px 0"><div class="icon">+</div><h3>Sin partidas</h3><p>CambiÃ¡ el filtro actual o agregÃ¡ una nueva partida.</p></div></td></tr>`;
   }
 
   document.getElementById('bd-tbody').innerHTML = html;
@@ -124,8 +132,8 @@ function renderDetallePartidaRow(partida, cap, insumos){
   const resumenTecnico = `
     <div class="apu-inline-summary">
       <div>
-        <p class="apu-inline-label">Capítulo</p>
-        <strong>${cap.id} — ${cap.name}</strong>
+        <p class="apu-inline-label">CapÃ­tulo</p>
+        <strong>${cap.id} â€” ${cap.name}</strong>
       </div>
       <div>
         <p class="apu-inline-label">Unidad</p>
@@ -156,9 +164,9 @@ function renderDetallePartidaRow(partida, cap, insumos){
     <div class="apu-empty">
       <div>
         <h3>Sin insumos cargados</h3>
-        <p>Agregá materiales, mano de obra, equipo o subcontrato para construir el APU de esta partida.</p>
+        <p>AgregÃ¡ materiales, mano de obra, equipo o subcontrato para construir el APU de esta partida.</p>
       </div>
-      <button class="btn btn-primary" onclick="agregarInsumoA('${partida.cod}')">＋ Agregar insumo</button>
+      <button class="btn btn-primary" onclick="agregarInsumoA('${partida.cod}')">+ Agregar insumo</button>
     </div>
   `;
 
@@ -169,12 +177,12 @@ function renderDetallePartidaRow(partida, cap, insumos){
           <div class="apu-inline-head">
             <div>
               <p class="apu-inline-eyebrow">APU integrado</p>
-              <h3>${partida.cod} — ${partida.desc}</h3>
-              <p class="apu-inline-sub">El desglose técnico ahora vive dentro de la Base de Datos para mantener contexto, trazabilidad y edición rápida.</p>
+              <h3>${partida.cod} â€” ${partida.desc}</h3>
+              <p class="apu-inline-sub">El desglose tÃ©cnico ahora vive dentro de la Base de Datos para mantener contexto, trazabilidad y ediciÃ³n rÃ¡pida.</p>
             </div>
             <div class="apu-inline-head-actions">
               <button class="btn btn-secondary" onclick="editarPartida(${partida.id})">Editar partida</button>
-              <button class="btn btn-primary" onclick="agregarInsumoA('${partida.cod}')">＋ Agregar insumo</button>
+              <button class="btn btn-primary" onclick="agregarInsumoA('${partida.cod}')">+ Agregar insumo</button>
             </div>
           </div>
           ${resumenTecnico}
@@ -213,7 +221,7 @@ function renderTablaApuInline(partida, insumos, totals){
         <thead>
           <tr>
             <th>#</th>
-            <th>Descripción</th>
+            <th>DescripciÃ³n</th>
             <th>Unidad</th>
             <th>Tipo</th>
             <th class="num">Cantidad</th>
@@ -245,11 +253,11 @@ function renderTablaApuInline(partida, insumos, totals){
 
 function abrirModalPartida(id){
   editPid = id || null;
-  document.getElementById('f-cap').innerHTML = CAPS.map(c=>`<option value="${c.id}">${c.id} — ${c.name}</option>`).join('');
+  document.getElementById('f-cap').innerHTML = CAPS.map(c=>`<option value="${c.id}">${c.id} â€” ${c.name}</option>`).join('');
 
   if(id){
     const p = DB.find(x=>x.id===id);
-    document.getElementById('mp-title').textContent = `Editar Partida — ${p.cod}`;
+    document.getElementById('mp-title').textContent = `Editar Partida â€” ${p.cod}`;
     document.getElementById('f-cap').value = p.cap;
     document.getElementById('f-cod').value = p.cod;
     document.getElementById('f-ramo').value = p.ramo || 'todos';
@@ -290,20 +298,20 @@ function autoCod(){
 
 function updPU(){
   const tot = ['f-mat','f-mo','f-eq','f-sub'].reduce((acc,idCampo)=>acc + (parseFloat(document.getElementById(idCampo).value) || 0), 0);
-  document.getElementById('f-pu-show').textContent = `₲ ${Math.round(tot).toLocaleString('es-PY')}`;
+  document.getElementById('f-pu-show').textContent = `â‚² ${Math.round(tot).toLocaleString('es-PY')}`;
 }
 
 function guardarPartida(){
   const cod = document.getElementById('f-cod').value.trim();
   const desc = document.getElementById('f-desc').value.trim();
   if(!cod || !desc){
-    notif('Completá código y descripción', '#E05555');
+    notif('CompletÃ¡ cÃ³digo y descripciÃ³n', '#E05555');
     return;
   }
 
   const codigoDuplicado = DB.some(p=>p.cod===cod && p.id!==editPid);
   if(codigoDuplicado){
-    notif('Ya existe una partida con ese código', '#E05555');
+    notif('Ya existe una partida con ese cÃ³digo', '#E05555');
     return;
   }
 
@@ -342,15 +350,15 @@ function guardarPartida(){
   marcarUnsaved();
   renderBD();
   renderDashboard();
-  notif(editPid ? '✓ Partida actualizada' : '✓ Partida agregada');
+  notif(editPid ? 'Partida actualizada' : 'Partida agregada');
 }
 
 function eliminarPartida(id){
   const p = DB.find(x=>x.id===id);
-  const ok = prompt(`⚠ Para eliminar escribí el código exacto:\n\n"${p.cod} — ${p.desc}"\n\nCódigo:`);
+  const ok = prompt(`Para eliminar escribÃ­ el cÃ³digo exacto:\n\n"${p.cod} â€” ${p.desc}"\n\nCÃ³digo:`);
   if(ok===null) return;
   if(ok.trim()!==p.cod){
-    notif('Código incorrecto — no se eliminó', '#E05555');
+    notif('CÃ³digo incorrecto â€” no se eliminÃ³', '#E05555');
     return;
   }
   const idx = DB.findIndex(x=>x.id===id);
@@ -369,7 +377,7 @@ function eliminarPartida(id){
   renderBD();
   renderPres();
   renderDashboard();
-  notif('Eliminada — Ctrl+Z para deshacer', '#E05555');
+  notif('Eliminada â€” Ctrl+Z para deshacer', '#E05555');
 }
 
 function renderAPU(){
@@ -402,7 +410,7 @@ function editarInsumo(cod, idx){
 }
 
 function _openIM(cod){
-  document.getElementById('ai-partida').innerHTML = DB.map(p=>`<option value="${p.cod}" ${p.cod === (cod || '') ? 'selected' : ''}>${p.cod} — ${p.desc}</option>`).join('');
+  document.getElementById('ai-partida').innerHTML = DB.map(p=>`<option value="${p.cod}" ${p.cod === (cod || '') ? 'selected' : ''}>${p.cod} â€” ${p.desc}</option>`).join('');
   document.getElementById('ai-partida').disabled = editInsIdx != null;
   document.getElementById('mi-title').textContent = 'Agregar Insumo';
   if(editInsIdx == null){
@@ -422,7 +430,7 @@ function guardarInsumo(){
   const puInsumo = parseFloat(document.getElementById('ai-pu').value);
 
   if(!desc){
-    notif('Ingresá la descripción del insumo', '#E05555');
+    notif('IngresÃ¡ la descripciÃ³n del insumo', '#E05555');
     return;
   }
   if(!(qty > 0)){
@@ -460,7 +468,7 @@ function guardarInsumo(){
   cerrarModal('modal-insumo');
   marcarUnsaved();
   renderBD();
-  notif('✓ Insumo guardado');
+  notif('Insumo guardado');
 }
 
 function eliminarInsumo(cod, idx){
@@ -470,7 +478,7 @@ function eliminarInsumo(cod, idx){
   recalcDesdeAPU(cod);
   marcarUnsaved();
   renderBD();
-  notif('Eliminado — Ctrl+Z para deshacer', '#E89020');
+  notif('Eliminado â€” Ctrl+Z para deshacer', '#E89020');
 }
 
 function recalcDesdeAPU(cod){
@@ -483,4 +491,3 @@ function recalcDesdeAPU(cod){
   p.sub = Math.round(ins.filter(i=>i.tipo==='S').reduce((acc,i)=>acc+(i.qty*i.pu),0));
 }
 
-// PRESUPUESTO

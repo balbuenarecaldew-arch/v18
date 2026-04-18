@@ -49,7 +49,7 @@ async function cargarDesdeFirebase(){
         _initialLoadDone = true;
         setTimeout(()=>renderDashboard(), 50);
         guardarCacheLocal();
-        if(DB.length) notif('âœ“ Datos sincronizados â€” ' + DB.length + ' partidas');
+        if(DB.length) notif('Datos sincronizados — ' + DB.length + ' partidas');
       } else {
         // Intentar cargar cache local mientras
         const cache = cargarCacheLocal();
@@ -58,7 +58,7 @@ async function cargarDesdeFirebase(){
           if(cache.CAPS) CAPS=cache.CAPS;
           if(cache.PRESUPUESTOS_GUARDADOS) PRESUPUESTOS_GUARDADOS=cache.PRESUPUESTOS_GUARDADOS;
           renderBD(); renderPres(); renderDashboard();
-          notif('âš  Usando cachÃ© local â€” ' + DB.length + ' partidas', '#E89020');
+          notif('Usando caché local — ' + DB.length + ' partidas', '#E89020');
         } else {
           cargarDatosIniciales();
         }
@@ -73,9 +73,9 @@ async function cargarDesdeFirebase(){
       if(cache.CAPS) CAPS=cache.CAPS;
       if(cache.PRESUPUESTOS_GUARDADOS) PRESUPUESTOS_GUARDADOS=cache.PRESUPUESTOS_GUARDADOS;
       renderBD(); renderPres(); renderDashboard();
-      notif('âš  Modo offline â€” usando datos locales', '#E89020');
+      notif('Modo offline — usando datos locales', '#E89020');
     } else {
-      notif('âš  Error de conexiÃ³n: ' + e.message, '#E05555');
+      notif('Error de conexión: ' + e.message, '#E05555');
     }
     setSyncStatus(false, true);
   }
@@ -85,7 +85,7 @@ async function guardarFirebase(silencioso=false){
   if(!currentUser) return;
   setSyncStatus(true);
   const btn = document.getElementById('save-btn');
-  if(!silencioso){ btn.innerHTML='ðŸ’¾ Guardando...'; btn.disabled=true; }
+  if(!silencioso){ btn.innerHTML='<span>Guardando...</span>'; btn.disabled=true; }
   try{
     const config = {
       pNombre:document.getElementById('p-nombre').value,
@@ -107,14 +107,14 @@ async function guardarFirebase(silencioso=false){
     });
     hayUnsaved = false;
     btn.classList.add('saved'); btn.classList.remove('unsaved');
-    btn.innerHTML = 'âœ“ <span>Guardado</span>'; btn.disabled = false;
+    btn.innerHTML = '<span>Guardado</span>'; btn.disabled = false;
     setSyncStatus(false);
     guardarCacheLocal();
-    if(!silencioso) notif('âœ“ Guardado en la nube');
-    setTimeout(() => { if(!hayUnsaved){ btn.innerHTML='ðŸ’¾ <span>Guardar</span>'; } }, 3000);
+    if(!silencioso) notif('Guardado en la nube');
+    setTimeout(() => { if(!hayUnsaved){ btn.innerHTML='<span>Guardar</span>'; } }, 3000);
   }catch(e){
-    if(!silencioso) notif('âš  Error al guardar: ' + e.message, '#E05555');
-    btn.innerHTML = 'ðŸ’¾ <span>Guardar</span>'; btn.disabled = false;
+    if(!silencioso) notif('Error al guardar: ' + e.message, '#E05555');
+    btn.innerHTML = '<span>Guardar</span>'; btn.disabled = false;
     setSyncStatus(false, true);
     guardarCacheLocal(); // guardar en local de todas formas
   }
@@ -125,17 +125,17 @@ function marcarUnsaved(){
   const btn = document.getElementById('save-btn');
   btn.classList.remove('saved');
   btn.classList.add('unsaved');
-  btn.innerHTML = 'ðŸ’¾ <span>Guardar</span>';
+  btn.innerHTML = '<span>Guardar</span>';
 }
 
 async function resetearDatos(){
-  if(!isAdmin){ notif('âš  Solo el administrador puede borrar todos los datos','#E05555'); return; }
-  if(!confirm('âš  ATENCIÃ“N\n\nÂ¿Borrar TODOS los datos de la nube?\n\nEsto afecta a TODOS los usuarios.')) return;
-  if(!confirm('Segunda confirmaciÃ³n â€” esta acciÃ³n NO se puede deshacer.\n\nÂ¿Confirmar borrado total?')) return;
+  if(!isAdmin){ notif('Solo el administrador puede borrar todos los datos','#E05555'); return; }
+  if(!confirm('ATENCIÓN\n\n¿Borrar TODOS los datos de la nube?\n\nEsto afecta a TODOS los usuarios.')) return;
+  if(!confirm('Segunda confirmación — esta acción NO se puede deshacer.\n\n¿Confirmar borrado total?')) return;
   try{
     const adminDoc = await db.collection('admins').doc(currentUser.uid).get();
-    if(!adminDoc.exists){ notif('âš  VerificaciÃ³n fallida â€” no sos admin','#E05555'); return; }
-  }catch(e){ notif('âš  Error de verificaciÃ³n: '+e.message,'#E05555'); return; }
+    if(!adminDoc.exists){ notif('Verificación fallida — no sos admin','#E05555'); return; }
+  }catch(e){ notif('Error de verificación: '+e.message,'#E05555'); return; }
   await db.collection('datos').doc('base').delete();
   DB=[]; APU={}; PRESUPUESTO=[]; PRESUPUESTOS_GUARDADOS=[];
   localStorage.removeItem('presupuestapp_cache');

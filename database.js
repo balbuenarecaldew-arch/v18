@@ -1,5 +1,6 @@
-let _renderBDTimer = null;
+﻿let _renderBDTimer = null;
 let expandedPartidas = new Set();
+let collapsedCapitulos = new Set();
 
 const APU_TYPE_META = {
   M: { label: 'Material', short: 'MAT', color: 'var(--azul)' },
@@ -22,24 +23,31 @@ function formatCantidad(valor){
 
 function getApuTotals(insumos){
   return {
-    M: Math.round(insumos.filter(i=>i.tipo==='M').reduce((acc,i)=>acc+(i.qty*i.pu),0)),
-    L: Math.round(insumos.filter(i=>i.tipo==='L').reduce((acc,i)=>acc+(i.qty*i.pu),0)),
-    E: Math.round(insumos.filter(i=>i.tipo==='E').reduce((acc,i)=>acc+(i.qty*i.pu),0)),
-    S: Math.round(insumos.filter(i=>i.tipo==='S').reduce((acc,i)=>acc+(i.qty*i.pu),0)),
+    M: Math.round(insumos.filter(i=>i.tipo === 'M').reduce((acc, i)=>acc + (i.qty * i.pu), 0)),
+    L: Math.round(insumos.filter(i=>i.tipo === 'L').reduce((acc, i)=>acc + (i.qty * i.pu), 0)),
+    E: Math.round(insumos.filter(i=>i.tipo === 'E').reduce((acc, i)=>acc + (i.qty * i.pu), 0)),
+    S: Math.round(insumos.filter(i=>i.tipo === 'S').reduce((acc, i)=>acc + (i.qty * i.pu), 0)),
   };
 }
 
 function expandirPartida(id, forceOpen){
   const key = String(id);
-  const debeAbrir = typeof forceOpen === 'boolean' ? forceOpen : !expandedPartidas.has(key);
-  if(debeAbrir) expandedPartidas.add(key);
+  const open = typeof forceOpen === 'boolean' ? forceOpen : !expandedPartidas.has(key);
+  if(open) expandedPartidas.add(key);
   else expandedPartidas.delete(key);
+  renderBD();
+}
+
+function toggleCapituloBD(capId){
+  const key = String(capId);
+  if(collapsedCapitulos.has(key)) collapsedCapitulos.delete(key);
+  else collapsedCapitulos.add(key);
   renderBD();
 }
 
 function renderBD(){
   clearTimeout(_renderBDTimer);
-  _renderBDTimer = setTimeout(_renderBDNow, 60);
+  _renderBDTimer = setTimeout(_renderBDNow, 50);
 }
 
 function limpiarBusquedaBD(){
@@ -48,87 +56,152 @@ function limpiarBusquedaBD(){
   renderBD();
 }
 
+function valorTablaBD(valor){
+  return valor > 0 ? fmtN(valor) : '-';
+}
+
+function renderCapituloRow(capId, partidas){
+  const cap = capOf(capId);
+  const collapsed = collapsedCapitulos.has(String(capId));
+  const totalCap = partidas.reduce((acc, p)=>acc + pu(p), 0);
+  return `
+    <tr class="cap-row cap-row-toggle" data-cap="${capId}">
+      <td colspan="11" style="background:${cap.color}CC">
+        <div class="cap-row-inner">
+          <button
+            type="button"
+            class="chapter-toggle ${collapsed ? '' : 'is-open'}"
+            onclick="toggleCapituloBD('${capId}')"
+            aria-expanded="${collapsed ? 'false' : 'true'}"
+            title="${collapsed ? 'Expandir capitulo' : 'Replegar capitulo'}"
+          >
+            <span>${collapsed ? '+' : '-'}</span>
+          </button>
+          <div class="cap-row-copy">
+            <strong>${capId} - ${cap.name}</strong>
+            <span>${partidas.length} partida${partidas.length === 1 ? '' : 's'}</span>
+          </div>
+          <div class="cap-row-total">Gs. ${fmtN(totalCap)}</div>
+        </div>
+      </td>
+    </tr>
+  `;
+}
+
 function _renderBDNow(){
   document.getElementById('badge-count').textContent = `${DB.length} partidas`;
+
   const lista = filtrarDB();
-  const q = (document.getElementById('bd-search')?.value || '').toLowerCase();
+  const q = (document.getElementById('bd-search')?.value || '').trim();
   const clearBtn = document.getElementById('bd-clear-btn');
   const status = document.getElementById('bd-status-text');
-  let html = '';
-  let prevCap = null;
 
   if(clearBtn) clearBtn.style.display = q ? 'inline-flex' : 'none';
   if(status){
     status.textContent = q
-      ? `Mostrando ${lista.length} de ${DB.length} partidas para “${q}”. Limpiá el filtro para ver toda la base.`
-      : 'Cada partida concentra su resumen económico y su desglose APU en el mismo lugar. Expandí una fila para ver, editar y recalcular insumos sin salir de la base.';
+      ? `Mostrando ${lista.length} de ${DB.length} partidas para "${q}". Limpia el filtro para ver toda la base.`
+      : 'Cada partida concentra su resumen economico y su desglose APU en el mismo lugar. Expandi una fila para ver, editar y recalcular insumos sin salir de la base.';
   }
 
-  if(!q && ramoActivo === 'todos'){
-    const capsConPartidas = new Set(lista.map(p=>p.cap));
-    CAPS.filter(cap=>!capsConPartidas.has(cap.id)).forEach(cap=>{
-      html += `<tr class="cap-row" style="border-left-color:${cap.color}"><td colspan="11" style="background:${cap.color}99">&nbsp;${cap.id} — ${cap.name} <span style="font-size:10px;opacity:.72;font-weight:500">(vacío — agregá partidas con Nueva partida)</span></td></tr>`;
-    });
-  }
-
-  lista.forEach(p=>{
-    const cap = capOf(p.cap);
-    const apu = getPartidaApu(p.cod);
-    const enPres = PRESUPUESTO.some(x=>x.pid===p.id);
-    const qtyPres = enPres ? PRESUPUESTO.find(x=>x.pid===p.id).qty : 0;
-    const estaExpandida = expandedPartidas.has(String(p.id));
-    const rowBg = enPres ? 'background:rgba(29,186,123,.04);border-left:2px solid var(--acento)' : '';
-    const ramoBadge = p.ramo && p.ramo !== 'todos'
-      ? `<span class="chip" style="background:${RAMO_COLORS[p.ramo] || '#888'}22;color:${RAMO_COLORS[p.ramo] || '#888'}">${p.ramo}</span>`
-      : '<span class="chip chip-muted">general</span>';
-    const presBadge = enPres
-      ? `<span class="chip chip-success">En presupuesto · ${qtyPres % 1 === 0 ? qtyPres : qtyPres.toFixed(2)}</span>`
-      : '';
-
-    if(p.cap !== prevCap){
-      prevCap = p.cap;
-      html += `<tr class="cap-row" style="border-left-color:${cap.color}"><td colspan="11" style="background:${cap.color}CC">&nbsp;${p.cap} — ${cap.name}</td></tr>`;
-    }
-
-    html += `
-      <tr class="db-summary-row" style="${rowBg}" data-pid="${p.id}">
-        <td>
-          <button class="accordion-toggle ${estaExpandida ? 'is-open' : ''}" type="button" onclick="expandirPartida(${p.id})" aria-expanded="${estaExpandida}" aria-controls="apu-panel-${p.id}" title="${estaExpandida ? 'Ocultar' : 'Mostrar'} desglose APU">
-            <span>${estaExpandida ? '−' : '+'}</span>
-          </button>
-        </td>
-        <td><code class="cell-code">${p.cod}</code></td>
-        <td>
-          <div class="cell-description">${p.desc}</div>
-          <div class="cell-meta">${presBadge}<span class="chip chip-outline">${apu.length} insumo${apu.length===1?'':'s'}</span></div>
-        </td>
-        <td class="cell-unit">${p.u}</td>
-        <td>${ramoBadge}</td>
-        <td class="num" style="color:var(--azul)">${p.mat>0?fmtN(p.mat):'—'}</td>
-        <td class="num" style="color:var(--acento)">${p.mo>0?fmtN(p.mo):'—'}</td>
-        <td class="num" style="color:var(--amarillo)">${p.eq>0?fmtN(p.eq):'—'}</td>
-        <td class="num" style="color:var(--naranja)">${p.sub>0?fmtN(p.sub):'—'}</td>
-        <td class="num total-cell">${fmtN(pu(p))}</td>
-        <td>
-          <div class="table-actions">
-            <button class="btn btn-secondary btn-xs" onclick="editarPartida(${p.id})">Editar</button>
-            <button class="btn btn-xs" onclick="addToPres(${p.id})" style="${enPres?'background:var(--acento4);color:var(--acento);border:1px solid var(--acento2)':'background:var(--naranjabg);color:var(--naranja);border:1px solid rgba(232,144,32,.2)'}">${enPres?'+1':'Agregar'}</button>
-            <button class="btn btn-danger btn-xs" onclick="eliminarPartida(${p.id})">Eliminar</button>
+  if(!lista.length){
+    document.getElementById('bd-tbody').innerHTML = `
+      <tr>
+        <td colspan="11">
+          <div class="empty-state" style="padding:48px 0">
+            <div class="icon">+</div>
+            <h3>Sin partidas</h3>
+            <p>Cambia el filtro actual o agrega una nueva partida.</p>
           </div>
         </td>
       </tr>
     `;
-
-    if(estaExpandida){
-      html += renderDetallePartidaRow(p, cap, apu);
-    }
-  });
-
-  if(!lista.length){
-    html = `<tr><td colspan="11"><div class="empty-state" style="padding:48px 0"><div class="icon">+</div><h3>Sin partidas</h3><p>Cambiá el filtro actual o agregá una nueva partida.</p></div></td></tr>`;
+    return;
   }
 
+  const grupos = [];
+  lista.forEach(partida=>{
+    let grupo = grupos.find(item=>item.capId === partida.cap);
+    if(!grupo){
+      grupo = { capId: partida.cap, partidas: [] };
+      grupos.push(grupo);
+    }
+    grupo.partidas.push(partida);
+  });
+
+  let html = '';
+
+  grupos.forEach(grupo=>{
+    const collapsed = collapsedCapitulos.has(String(grupo.capId));
+    html += renderCapituloRow(grupo.capId, grupo.partidas);
+    if(collapsed) return;
+    grupo.partidas.forEach(partida=>{
+      html += renderPartidaSummaryRow(partida);
+      if(expandedPartidas.has(String(partida.id))){
+        html += renderDetallePartidaRow(partida, capOf(partida.cap), getPartidaApu(partida.cod));
+      }
+    });
+  });
+
   document.getElementById('bd-tbody').innerHTML = html;
+}
+
+function renderPartidaSummaryRow(partida){
+  const apu = getPartidaApu(partida.cod);
+  const enPres = PRESUPUESTO.some(item=>item.pid === partida.id);
+  const qtyPres = enPres ? PRESUPUESTO.find(item=>item.pid === partida.id).qty : 0;
+  const open = expandedPartidas.has(String(partida.id));
+  const rowBg = enPres ? 'background:rgba(29,186,123,.04);border-left:2px solid var(--acento)' : '';
+  const ramoBadge = partida.ramo && partida.ramo !== 'todos'
+    ? `<span class="chip" style="background:${RAMO_COLORS[partida.ramo] || '#888'}22;color:${RAMO_COLORS[partida.ramo] || '#888'}">${partida.ramo}</span>`
+    : '<span class="chip chip-muted">general</span>';
+  const presBadge = enPres
+    ? `<span class="chip chip-success">En presupuesto | ${qtyPres % 1 === 0 ? qtyPres : qtyPres.toFixed(2)}</span>`
+    : '';
+
+  return `
+    <tr class="db-summary-row" style="${rowBg}" data-pid="${partida.id}">
+      <td>
+        <button
+          class="accordion-toggle ${open ? 'is-open' : ''}"
+          type="button"
+          onclick="expandirPartida(${partida.id})"
+          aria-expanded="${open ? 'true' : 'false'}"
+          aria-controls="apu-panel-${partida.id}"
+          title="${open ? 'Ocultar APU' : 'Mostrar APU'}"
+        >
+          <span>${open ? '-' : '+'}</span>
+        </button>
+      </td>
+      <td><code class="cell-code">${partida.cod}</code></td>
+      <td>
+        <div class="cell-description">${partida.desc}</div>
+        <div class="cell-meta">
+          ${presBadge}
+          <span class="chip chip-outline">${apu.length} insumo${apu.length === 1 ? '' : 's'}</span>
+        </div>
+      </td>
+      <td class="cell-unit">${partida.u}</td>
+      <td>${ramoBadge}</td>
+      <td class="num" style="color:var(--azul)">${valorTablaBD(partida.mat)}</td>
+      <td class="num" style="color:var(--acento)">${valorTablaBD(partida.mo)}</td>
+      <td class="num" style="color:var(--amarillo)">${valorTablaBD(partida.eq)}</td>
+      <td class="num" style="color:var(--naranja)">${valorTablaBD(partida.sub)}</td>
+      <td class="num total-cell">${fmtN(pu(partida))}</td>
+      <td>
+        <div class="table-actions">
+          <button class="btn btn-secondary btn-xs" onclick="editarPartida(${partida.id})">Editar</button>
+          <button class="btn btn-xs" onclick="addToPres(${partida.id})" style="${enPresStyle(enPres)}">${enPres ? '+1' : 'Agregar'}</button>
+          <button class="btn btn-danger btn-xs" onclick="eliminarPartida(${partida.id})">Eliminar</button>
+        </div>
+      </td>
+    </tr>
+  `;
+}
+
+function enPresStyle(enPres){
+  return enPres
+    ? 'background:var(--acento4);color:var(--acento);border:1px solid var(--acento2)'
+    : 'background:var(--naranjabg);color:var(--naranja);border:1px solid rgba(232,144,32,.2)';
 }
 
 function renderDetallePartidaRow(partida, cap, insumos){
@@ -136,11 +209,12 @@ function renderDetallePartidaRow(partida, cap, insumos){
     ? getApuTotals(insumos)
     : { M: partida.mat || 0, L: partida.mo || 0, E: partida.eq || 0, S: partida.sub || 0 };
   const total = Math.round(totals.M + totals.L + totals.E + totals.S);
+
   const resumenTecnico = `
     <div class="apu-inline-summary">
       <div>
-        <p class="apu-inline-label">Capítulo</p>
-        <strong>${cap.id} — ${cap.name}</strong>
+        <p class="apu-inline-label">Capitulo</p>
+        <strong>${cap.id} - ${cap.name}</strong>
       </div>
       <div>
         <p class="apu-inline-label">Unidad</p>
@@ -157,25 +231,27 @@ function renderDetallePartidaRow(partida, cap, insumos){
     </div>
   `;
 
-  const kpis = Object.entries(APU_TYPE_META).map(([tipo, meta])=>{
-    return `<div class="apu-kpi">
+  const kpis = Object.entries(APU_TYPE_META).map(([tipo, meta])=>`
+    <div class="apu-kpi">
       <span class="bdg bdg-${tipo}">${meta.short}</span>
       <div>
         <p>${meta.label}</p>
         <strong style="color:${meta.color}">${fmt(totals[tipo])}</strong>
       </div>
-    </div>`;
-  }).join('');
-
-  const tabla = insumos.length ? renderTablaApuInline(partida, insumos, totals) : `
-    <div class="apu-empty">
-      <div>
-        <h3>Sin insumos cargados</h3>
-        <p>Agregá materiales, mano de obra, equipo o subcontrato para construir el APU de esta partida.</p>
-      </div>
-      <button class="btn btn-primary" onclick="agregarInsumoA('${partida.cod}')">+ Agregar insumo</button>
     </div>
-  `;
+  `).join('');
+
+  const tabla = insumos.length
+    ? renderTablaApuInline(partida, insumos, totals)
+    : `
+      <div class="apu-empty">
+        <div>
+          <h3>Sin insumos cargados</h3>
+          <p>Agrega materiales, mano de obra, equipo o subcontrato para construir el APU de esta partida.</p>
+        </div>
+        <button class="btn btn-primary" onclick="agregarInsumoA('${partida.cod}')">+ Agregar insumo</button>
+      </div>
+    `;
 
   return `
     <tr class="db-detail-row">
@@ -184,8 +260,8 @@ function renderDetallePartidaRow(partida, cap, insumos){
           <div class="apu-inline-head">
             <div>
               <p class="apu-inline-eyebrow">APU integrado</p>
-              <h3>${partida.cod} — ${partida.desc}</h3>
-              <p class="apu-inline-sub">El desglose técnico ahora vive dentro de la Base de Datos para mantener contexto, trazabilidad y edición rápida.</p>
+              <h3>${partida.cod} - ${partida.desc}</h3>
+              <p class="apu-inline-sub">El desglose tecnico ahora vive dentro de la Base de Datos para mantener contexto, trazabilidad y edicion rapida.</p>
             </div>
             <div class="apu-inline-head-actions">
               <button class="btn btn-secondary" onclick="editarPartida(${partida.id})">Editar partida</button>
@@ -228,7 +304,7 @@ function renderTablaApuInline(partida, insumos, totals){
         <thead>
           <tr>
             <th>#</th>
-            <th>Descripción</th>
+            <th>Descripcion</th>
             <th>Unidad</th>
             <th>Tipo</th>
             <th class="num">Cantidad</th>
@@ -260,25 +336,27 @@ function renderTablaApuInline(partida, insumos, totals){
 
 function abrirModalPartida(id){
   editPid = id || null;
-  document.getElementById('f-cap').innerHTML = CAPS.map(c=>`<option value="${c.id}">${c.id} — ${c.name}</option>`).join('');
+  document.getElementById('f-cap').innerHTML = CAPS.map(c=>`<option value="${c.id}">${c.id} - ${c.name}</option>`).join('');
 
   if(id){
-    const p = DB.find(x=>x.id===id);
-    document.getElementById('mp-title').textContent = `Editar Partida — ${p.cod}`;
-    document.getElementById('f-cap').value = p.cap;
-    document.getElementById('f-cod').value = p.cod;
-    document.getElementById('f-ramo').value = p.ramo || 'todos';
-    document.getElementById('f-u').value = p.u;
-    document.getElementById('f-desc').value = p.desc;
-    document.getElementById('f-mat').value = p.mat;
-    document.getElementById('f-mo').value = p.mo;
-    document.getElementById('f-eq').value = p.eq;
-    document.getElementById('f-sub').value = p.sub;
-  } else {
+    const partida = DB.find(item=>item.id === id);
+    document.getElementById('mp-title').textContent = `Editar Partida - ${partida.cod}`;
+    document.getElementById('f-cap').value = partida.cap;
+    document.getElementById('f-cod').value = partida.cod;
+    document.getElementById('f-ramo').value = partida.ramo || 'todos';
+    document.getElementById('f-u').value = partida.u;
+    document.getElementById('f-desc').value = partida.desc;
+    document.getElementById('f-mat').value = partida.mat;
+    document.getElementById('f-mo').value = partida.mo;
+    document.getElementById('f-eq').value = partida.eq;
+    document.getElementById('f-sub').value = partida.sub;
+  }else{
     document.getElementById('mp-title').textContent = 'Nueva Partida';
     document.getElementById('f-cod').value = '';
     document.getElementById('f-desc').value = '';
-    ['f-mat','f-mo','f-eq','f-sub'].forEach(idCampo=>document.getElementById(idCampo).value = 0);
+    ['f-mat', 'f-mo', 'f-eq', 'f-sub'].forEach(idCampo=>{
+      document.getElementById(idCampo).value = 0;
+    });
     document.getElementById('f-cap').value = '01';
     document.getElementById('f-ramo').value = ramoActivo === 'todos' ? 'civil' : ramoActivo;
     autoCod();
@@ -296,33 +374,35 @@ function autoCod(){
   if(editPid) return;
   const cap = document.getElementById('f-cap').value;
   const correlativos = DB
-    .filter(p=>p.cap===cap)
-    .map(p=>parseInt((String(p.cod).split('.')[1] || '0'), 10))
+    .filter(partida=>partida.cap === cap)
+    .map(partida=>parseInt((String(partida.cod).split('.')[1] || '0'), 10))
     .filter(Number.isFinite);
   const siguiente = correlativos.length ? Math.max(...correlativos) + 1 : 1;
-  document.getElementById('f-cod').value = `${cap}.${String(siguiente).padStart(2,'0')}`;
+  document.getElementById('f-cod').value = `${cap}.${String(siguiente).padStart(2, '0')}`;
 }
 
 function updPU(){
-  const tot = ['f-mat','f-mo','f-eq','f-sub'].reduce((acc,idCampo)=>acc + (parseFloat(document.getElementById(idCampo).value) || 0), 0);
-  document.getElementById('f-pu-show').textContent = `₲ ${Math.round(tot).toLocaleString('es-PY')}`;
+  const total = ['f-mat', 'f-mo', 'f-eq', 'f-sub']
+    .reduce((acc, idCampo)=>acc + (parseFloat(document.getElementById(idCampo).value) || 0), 0);
+  document.getElementById('f-pu-show').textContent = `Gs. ${Math.round(total).toLocaleString('es-PY')}`;
 }
 
 function guardarPartida(){
   const cod = document.getElementById('f-cod').value.trim();
   const desc = document.getElementById('f-desc').value.trim();
+
   if(!cod || !desc){
-    notif('Completá código y descripción', '#E05555');
+    notif('Completa codigo y descripcion', '#E05555');
     return;
   }
 
-  const codigoDuplicado = DB.some(p=>p.cod===cod && p.id!==editPid);
+  const codigoDuplicado = DB.some(partida=>partida.cod === cod && partida.id !== editPid);
   if(codigoDuplicado){
-    notif('Ya existe una partida con ese código', '#E05555');
+    notif('Ya existe una partida con ese codigo', '#E05555');
     return;
   }
 
-  const p = {
+  const partida = {
     id: editPid || nextNumericId(DB),
     cap: document.getElementById('f-cap').value,
     cod,
@@ -336,10 +416,10 @@ function guardarPartida(){
   };
 
   if(editPid){
-    const idx = DB.findIndex(x=>x.id===editPid);
+    const idx = DB.findIndex(item=>item.id === editPid);
     const anterior = DB[idx];
     pushHistorial('editPartida', { partida: { ...anterior } });
-    DB[idx] = p;
+    DB[idx] = partida;
 
     if(anterior.cod !== cod){
       const oldKey = partidaKeyFromCode(anterior.cod);
@@ -349,8 +429,8 @@ function guardarPartida(){
         delete APU[oldKey];
       }
     }
-  } else {
-    DB.push(p);
+  }else{
+    DB.push(partida);
   }
 
   cerrarModal('modal-partida');
@@ -361,30 +441,32 @@ function guardarPartida(){
 }
 
 function eliminarPartida(id){
-  const p = DB.find(x=>x.id===id);
-  const ok = prompt(`Para eliminar escribí el código exacto:\n\n"${p.cod} — ${p.desc}"\n\nCódigo:`);
-  if(ok===null) return;
-  if(ok.trim()!==p.cod){
-    notif('Código incorrecto — no se eliminó', '#E05555');
+  const partida = DB.find(item=>item.id === id);
+  const ok = prompt(`Para eliminar escribi el codigo exacto:\n\n"${partida.cod} - ${partida.desc}"\n\nCodigo:`);
+  if(ok === null) return;
+  if(ok.trim() !== partida.cod){
+    notif('Codigo incorrecto - no se elimino', '#E05555');
     return;
   }
-  const idx = DB.findIndex(x=>x.id===id);
-  const presItems = PRESUPUESTO.filter(x=>x.pid===id);
+
+  const idx = DB.findIndex(item=>item.id === id);
+  const presItems = PRESUPUESTO.filter(item=>item.pid === id);
   pushHistorial('elimPartida', {
     idx,
-    partida:{...p},
-    apu:getPartidaApu(p.cod).length ? [...getPartidaApu(p.cod)] : null,
-    presItems:[...presItems],
+    partida: { ...partida },
+    apu: getPartidaApu(partida.cod).length ? [...getPartidaApu(partida.cod)] : null,
+    presItems: [...presItems],
   });
-  DB = DB.filter(x=>x.id!==id);
-  PRESUPUESTO = PRESUPUESTO.filter(x=>x.pid!==id);
+
+  DB = DB.filter(item=>item.id !== id);
+  PRESUPUESTO = PRESUPUESTO.filter(item=>item.pid !== id);
   expandedPartidas.delete(String(id));
-  delete APU[partidaKeyFromCode(p.cod)];
+  delete APU[partidaKeyFromCode(partida.cod)];
   marcarUnsaved();
   renderBD();
   renderPres();
   renderDashboard();
-  notif('Eliminada — Ctrl+Z para deshacer', '#E05555');
+  notif('Eliminada - Ctrl+Z para deshacer', '#E05555');
 }
 
 function renderAPU(){
@@ -406,18 +488,20 @@ function agregarInsumoA(cod){
 function editarInsumo(cod, idx){
   editInsCod = cod;
   editInsIdx = idx;
-  const ins = getPartidaApu(cod)[idx];
+  const insumo = getPartidaApu(cod)[idx];
   _openIM(cod);
-  document.getElementById('ai-desc').value = ins.desc;
-  document.getElementById('ai-u').value = ins.u;
-  document.getElementById('ai-tipo').value = ins.tipo;
-  document.getElementById('ai-qty').value = ins.qty;
-  document.getElementById('ai-pu').value = ins.pu;
+  document.getElementById('ai-desc').value = insumo.desc;
+  document.getElementById('ai-u').value = insumo.u;
+  document.getElementById('ai-tipo').value = insumo.tipo;
+  document.getElementById('ai-qty').value = insumo.qty;
+  document.getElementById('ai-pu').value = insumo.pu;
   document.getElementById('mi-title').textContent = 'Editar Insumo';
 }
 
 function _openIM(cod){
-  document.getElementById('ai-partida').innerHTML = DB.map(p=>`<option value="${p.cod}" ${p.cod === (cod || '') ? 'selected' : ''}>${p.cod} — ${p.desc}</option>`).join('');
+  document.getElementById('ai-partida').innerHTML = DB.map(partida=>`
+    <option value="${partida.cod}" ${partida.cod === (cod || '') ? 'selected' : ''}>${partida.cod} - ${partida.desc}</option>
+  `).join('');
   document.getElementById('ai-partida').disabled = editInsIdx != null;
   document.getElementById('mi-title').textContent = 'Agregar Insumo';
   if(editInsIdx == null){
@@ -437,7 +521,7 @@ function guardarInsumo(){
   const puInsumo = parseFloat(document.getElementById('ai-pu').value);
 
   if(!desc){
-    notif('Ingresá la descripción del insumo', '#E05555');
+    notif('Ingresa la descripcion del insumo', '#E05555');
     return;
   }
   if(!(qty > 0)){
@@ -464,14 +548,17 @@ function guardarInsumo(){
   if(editInsIdx != null){
     pushHistorial('editInsumo', { cod: codKey, insumosPrev: prevIns });
     APU[codKey][editInsIdx] = insumo;
-  } else {
+  }else{
     pushHistorial('agregarInsumo', { cod: codKey, insumosPrev: prevIns });
     APU[codKey].push(insumo);
   }
 
   recalcDesdeAPU(cod);
-  const partida = DB.find(p=>p.cod===cod);
-  if(partida) expandedPartidas.add(String(partida.id));
+  const partida = DB.find(item=>item.cod === cod);
+  if(partida){
+    expandedPartidas.add(String(partida.id));
+    collapsedCapitulos.delete(String(partida.cap));
+  }
   cerrarModal('modal-insumo');
   marcarUnsaved();
   renderBD();
@@ -485,15 +572,17 @@ function eliminarInsumo(cod, idx){
   recalcDesdeAPU(cod);
   marcarUnsaved();
   renderBD();
-  notif('Eliminado — Ctrl+Z para deshacer', '#E89020');
+  notif('Eliminado - Ctrl+Z para deshacer', '#E89020');
 }
 
 function recalcDesdeAPU(cod){
-  const ins = getPartidaApu(cod);
-  const p = DB.find(x=>x.cod===cod);
-  if(!p) return;
-  p.mat = Math.round(ins.filter(i=>i.tipo==='M').reduce((acc,i)=>acc+(i.qty*i.pu),0));
-  p.mo = Math.round(ins.filter(i=>i.tipo==='L').reduce((acc,i)=>acc+(i.qty*i.pu),0));
-  p.eq = Math.round(ins.filter(i=>i.tipo==='E').reduce((acc,i)=>acc+(i.qty*i.pu),0));
-  p.sub = Math.round(ins.filter(i=>i.tipo==='S').reduce((acc,i)=>acc+(i.qty*i.pu),0));
+  const insumos = getPartidaApu(cod);
+  const partida = DB.find(item=>item.cod === cod);
+  if(!partida) return;
+  partida.mat = Math.round(insumos.filter(i=>i.tipo === 'M').reduce((acc, i)=>acc + (i.qty * i.pu), 0));
+  partida.mo = Math.round(insumos.filter(i=>i.tipo === 'L').reduce((acc, i)=>acc + (i.qty * i.pu), 0));
+  partida.eq = Math.round(insumos.filter(i=>i.tipo === 'E').reduce((acc, i)=>acc + (i.qty * i.pu), 0));
+  partida.sub = Math.round(insumos.filter(i=>i.tipo === 'S').reduce((acc, i)=>acc + (i.qty * i.pu), 0));
 }
+
+

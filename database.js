@@ -56,6 +56,19 @@ function limpiarBusquedaBD(){
   renderBD();
 }
 
+function getRamoLabel(ramo){
+  const labels = {
+    todos: 'Todos',
+    vial: 'Viales',
+    civil: 'Civiles',
+    electrica: 'Electricas',
+    sanitaria: 'Sanitarias',
+    hvac: 'Climatizacion',
+    acabados: 'Acabados',
+  };
+  return labels[ramo] || ramo;
+}
+
 function valorTablaBD(valor){
   return valor > 0 ? fmtN(valor) : '-';
 }
@@ -88,29 +101,49 @@ function renderCapituloRow(capId, partidas){
   `;
 }
 
+function renderCapituloEmptyRow(capId){
+  return `
+    <tr class="db-empty-cap-row">
+      <td colspan="11">
+        <div class="empty-state" style="padding:22px 0">
+          <h3 style="margin-bottom:4px">Capitulo ${capId} sin partidas</h3>
+          <p>Usa "Nueva partida" para cargar items en este capitulo.</p>
+        </div>
+      </td>
+    </tr>
+  `;
+}
+
 function _renderBDNow(){
   document.getElementById('badge-count').textContent = `${DB.length} partidas`;
 
   const lista = filtrarDB();
   const q = (document.getElementById('bd-search')?.value || '').trim();
+  const ramoFiltrado = ramoActivo !== 'todos';
   const clearBtn = document.getElementById('bd-clear-btn');
   const status = document.getElementById('bd-status-text');
 
   if(clearBtn) clearBtn.style.display = q ? 'inline-flex' : 'none';
   if(status){
-    status.textContent = q
-      ? `Mostrando ${lista.length} de ${DB.length} partidas para "${q}". Limpia el filtro para ver toda la base.`
-      : 'Cada partida concentra su resumen economico y su desglose APU en el mismo lugar. Expandi una fila para ver, editar y recalcular insumos sin salir de la base.';
+    if(q && ramoFiltrado){
+      status.textContent = `Mostrando ${lista.length} de ${DB.length} partidas para "${q}" en ${getRamoLabel(ramoActivo)}.`;
+    } else if(q){
+      status.textContent = `Mostrando ${lista.length} de ${DB.length} partidas para "${q}". Limpia el filtro para ver toda la base.`;
+    } else if(ramoFiltrado){
+      status.textContent = `Mostrando ${lista.length} de ${DB.length} partidas del ramo ${getRamoLabel(ramoActivo)}.`;
+    } else {
+      status.textContent = 'Cada partida concentra su resumen economico y su desglose APU en el mismo lugar. Expandi una fila para ver, editar y recalcular insumos sin salir de la base.';
+    }
   }
 
-  if(!lista.length){
+  if(!lista.length && (q || ramoFiltrado)){
     document.getElementById('bd-tbody').innerHTML = `
       <tr>
         <td colspan="11">
           <div class="empty-state" style="padding:48px 0">
             <div class="icon">+</div>
             <h3>Sin partidas</h3>
-            <p>Cambia el filtro actual o agrega una nueva partida.</p>
+            <p>No hay coincidencias con el filtro actual. Cambia el ramo, limpia la busqueda o agrega una nueva partida.</p>
           </div>
         </td>
       </tr>
@@ -118,15 +151,16 @@ function _renderBDNow(){
     return;
   }
 
-  const grupos = [];
+  const gruposMap = new Map();
   lista.forEach(partida=>{
-    let grupo = grupos.find(item=>item.capId === partida.cap);
-    if(!grupo){
-      grupo = { capId: partida.cap, partidas: [] };
-      grupos.push(grupo);
-    }
-    grupo.partidas.push(partida);
+    if(!gruposMap.has(partida.cap)) gruposMap.set(partida.cap, []);
+    gruposMap.get(partida.cap).push(partida);
   });
+
+  const mostrarSoloGruposConResultados = q || ramoFiltrado;
+  const grupos = mostrarSoloGruposConResultados
+    ? Array.from(gruposMap.entries()).map(([capId, partidas])=>({ capId, partidas }))
+    : CAPS.map(cap=>({ capId: cap.id, partidas: gruposMap.get(cap.id) || [] }));
 
   let html = '';
 
@@ -134,6 +168,10 @@ function _renderBDNow(){
     const collapsed = collapsedCapitulos.has(String(grupo.capId));
     html += renderCapituloRow(grupo.capId, grupo.partidas);
     if(collapsed) return;
+    if(!grupo.partidas.length){
+      html += renderCapituloEmptyRow(grupo.capId);
+      return;
+    }
     grupo.partidas.forEach(partida=>{
       html += renderPartidaSummaryRow(partida);
       if(expandedPartidas.has(String(partida.id))){
@@ -189,9 +227,14 @@ function renderPartidaSummaryRow(partida){
       <td class="num total-cell">${fmtN(pu(partida))}</td>
       <td>
         <div class="table-actions">
-          <button class="btn btn-secondary btn-xs" onclick="editarPartida(${partida.id})">Editar</button>
-          <button class="btn btn-xs" onclick="addToPres(${partida.id})" style="${enPresStyle(enPres)}">${enPres ? '+1' : 'Agregar'}</button>
-          <button class="btn btn-danger btn-xs" onclick="eliminarPartida(${partida.id})">Eliminar</button>
+          <div class="budget-action-group">
+            <button class="budget-action-btn add" onclick="addToPres(${partida.id})">${enPres ? 'Agregar +1' : 'Agregar'}</button>
+            <button class="budget-action-btn remove" onclick="quitarPres(${partida.id})" ${enPres ? '' : 'disabled'}>Excluir</button>
+          </div>
+          <div class="table-actions-secondary">
+            <button class="btn btn-secondary btn-xs" onclick="editarPartida(${partida.id})">Editar</button>
+            <button class="btn btn-danger btn-xs" onclick="eliminarPartida(${partida.id})">Eliminar</button>
+          </div>
         </div>
       </td>
     </tr>
@@ -474,13 +517,12 @@ function renderAPU(){
 }
 
 function abrirModalInsumo(){
-  editInsIdx = null;
-  editInsCod = null;
+  resetInsumoModalState();
   _openIM();
 }
 
 function agregarInsumoA(cod){
-  editInsIdx = null;
+  resetInsumoModalState();
   editInsCod = cod;
   _openIM(cod);
 }
@@ -512,6 +554,13 @@ function _openIM(cod){
     document.getElementById('ai-pu').value = 0;
   }
   abrirModal('modal-insumo');
+}
+
+function resetInsumoModalState(){
+  editInsIdx = null;
+  editInsCod = null;
+  const selectPartida = document.getElementById('ai-partida');
+  if(selectPartida) selectPartida.disabled = false;
 }
 
 function guardarInsumo(){
@@ -559,6 +608,7 @@ function guardarInsumo(){
     expandedPartidas.add(String(partida.id));
     collapsedCapitulos.delete(String(partida.cap));
   }
+  resetInsumoModalState();
   cerrarModal('modal-insumo');
   marcarUnsaved();
   renderBD();

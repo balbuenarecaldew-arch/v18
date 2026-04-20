@@ -1,3 +1,27 @@
+function ensureDashboardCanvas(canvasId, fallbackMessage){
+  let canvas = document.getElementById(canvasId);
+  if(canvas) return canvas;
+
+  if(canvasId === 'chart-caps'){
+    const host = document.querySelector('#tab-dashboard .card:nth-of-type(1) .chart-wrap');
+    if(host){
+      host.innerHTML = `<canvas id="chart-caps"></canvas>`;
+      return document.getElementById('chart-caps');
+    }
+  }
+
+  if(canvasId === 'chart-tipos'){
+    const host = document.querySelector('#tab-dashboard .card:nth-of-type(2) .chart-wrap');
+    if(host){
+      host.innerHTML = `<canvas id="chart-tipos"></canvas>`;
+      return document.getElementById('chart-tipos');
+    }
+  }
+
+  console.warn(fallbackMessage);
+  return null;
+}
+
 function renderDashboard(){
   const gi = parseFloat(document.getElementById('pct-gi')?.value || '13') || 13;
   const bi = parseFloat(document.getElementById('pct-bi')?.value || '6') || 6;
@@ -49,7 +73,7 @@ function renderDashboard(){
   const capData = capKeys.map(k => Math.round(byCap[k]));
   const capColors = capKeys.map(k => capOf(k).color);
 
-  const ctxCaps = document.getElementById('chart-caps');
+  const ctxCaps = ensureDashboardCanvas('chart-caps', 'chart-caps host not found');
   if(ctxCaps){
     if(dashCharts.caps){
       try { dashCharts.caps.destroy(); } catch (e) {}
@@ -117,7 +141,7 @@ function renderDashboard(){
     return a + (p ? p.sub * it.qty : 0);
   }, 0);
 
-  const ctxTipos = document.getElementById('chart-tipos');
+  const ctxTipos = ensureDashboardCanvas('chart-tipos', 'chart-tipos host not found');
   if(ctxTipos){
     if(dashCharts.tipos){
       try { dashCharts.tipos.destroy(); } catch (e) {}

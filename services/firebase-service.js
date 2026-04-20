@@ -10,18 +10,18 @@
 async function cargarDesdeFirebase(){
   setSyncStatus(true);
   try{
-    // Guardar el unsubscriber para poder desuscribirse al cerrar sesiÃ³n
+    // Guardar el unsubscriber para poder desuscribirse al cerrar sesion
     _firestoreUnsub = db.collection('datos').doc('base').onSnapshot(snap => {
       if(snap.exists){
         const d = snap.data();
         DB = d.DB||[]; APU = d.APU||{};
         // Solo actualizar PRESUPUESTO desde Firebase si no estamos en medio de un vaciado intencional
         if(Date.now() < _ignorarProximoSnapshotPres){
-          // Ignorar este snapshot â€” acabamos de vaciar el presupuesto
+          // Ignorar este snapshot: acabamos de vaciar el presupuesto
         } else {
           PRESUPUESTO = d.PRESUPUESTO||[];
         }
-        // Cargar CAPS solo si tienen estructura vÃ¡lida (con campo ramos)
+        // Cargar CAPS solo si tienen estructura valida (con campo ramos)
         if(d.CAPS && d.CAPS.length && d.CAPS[0].ramos){
           CAPS = d.CAPS;
         } else if(d.CAPS && d.CAPS.length){
@@ -49,7 +49,7 @@ async function cargarDesdeFirebase(){
         _initialLoadDone = true;
         setTimeout(()=>renderDashboard(), 50);
         guardarCacheLocal();
-        if(DB.length) notif('Datos sincronizados — ' + DB.length + ' partidas');
+        if(DB.length) notif('Datos sincronizados - ' + DB.length + ' partidas');
       } else {
         // Intentar cargar cache local mientras
         const cache = cargarCacheLocal();
@@ -58,7 +58,7 @@ async function cargarDesdeFirebase(){
           if(cache.CAPS) CAPS=cache.CAPS;
           if(cache.PRESUPUESTOS_GUARDADOS) PRESUPUESTOS_GUARDADOS=cache.PRESUPUESTOS_GUARDADOS;
           renderBD(); renderPres(); renderDashboard();
-          notif('Usando caché local — ' + DB.length + ' partidas', '#E89020');
+          notif('Usando cache local - ' + DB.length + ' partidas', '#E89020');
         } else {
           cargarDatosIniciales();
         }
@@ -66,14 +66,14 @@ async function cargarDesdeFirebase(){
       setSyncStatus(false);
     });
   }catch(e){
-    // Si falla Firebase, usar cachÃ©
+    // Si falla Firebase, usar cache
     const cache = cargarCacheLocal();
     if(cache && cache.DB){
       DB=cache.DB; APU=cache.APU||{}; PRESUPUESTO=cache.PRESUPUESTO||[];
       if(cache.CAPS) CAPS=cache.CAPS;
       if(cache.PRESUPUESTOS_GUARDADOS) PRESUPUESTOS_GUARDADOS=cache.PRESUPUESTOS_GUARDADOS;
       renderBD(); renderPres(); renderDashboard();
-      notif('Modo offline — usando datos locales', '#E89020');
+      notif('Modo offline - usando datos locales', '#E89020');
     } else {
       notif('Error de conexión: ' + e.message, '#E05555');
     }
@@ -130,11 +130,11 @@ function marcarUnsaved(){
 
 async function resetearDatos(){
   if(!isAdmin){ notif('Solo el administrador puede borrar todos los datos','#E05555'); return; }
-  if(!confirm('ATENCIÓN\n\n¿Borrar TODOS los datos de la nube?\n\nEsto afecta a TODOS los usuarios.')) return;
-  if(!confirm('Segunda confirmación — esta acción NO se puede deshacer.\n\n¿Confirmar borrado total?')) return;
+  if(!confirm('ATENCION\n\nBorrar TODOS los datos de la nube?\n\nEsto afecta a TODOS los usuarios.')) return;
+  if(!confirm('Segunda confirmacion: esta accion NO se puede deshacer.\n\nConfirmar borrado total?')) return;
   try{
     const adminDoc = await db.collection('admins').doc(currentUser.uid).get();
-    if(!adminDoc.exists){ notif('Verificación fallida — no sos admin','#E05555'); return; }
+    if(!adminDoc.exists){ notif('Verificacion fallida - no sos admin','#E05555'); return; }
   }catch(e){ notif('Error de verificación: '+e.message,'#E05555'); return; }
   await db.collection('datos').doc('base').delete();
   DB=[]; APU={}; PRESUPUESTO=[]; PRESUPUESTOS_GUARDADOS=[];
@@ -178,27 +178,27 @@ function deshacerUltima(){
       DB.splice(a.datos.idx, 0, a.datos.partida);
       if(a.datos.apu) APU[a.datos.partida.cod.replace('.','_')] = a.datos.apu;
       if(a.datos.presItems) a.datos.presItems.forEach(it=>PRESUPUESTO.push(it));
-      renderBD(); renderPres(); notif('â†© Partida recuperada'); break;
+      renderBD(); renderPres(); notif('Partida recuperada'); break;
     case 'editPartida':
       DB[DB.findIndex(x=>x.id===a.datos.partida.id)] = a.datos.partida;
-      renderBD(); notif('â†© EdiciÃ³n revertida'); break;
+      renderBD(); notif('Edicion revertida'); break;
     case 'elimInsumo':
       if(!APU[a.datos.cod]) APU[a.datos.cod]=[];
       APU[a.datos.cod].splice(a.datos.idx, 0, a.datos.insumo);
       recalcDesdeAPU(a.datos.cod.replace('_','.'));
-      renderAPU(); renderBD(); notif('â†© Insumo recuperado'); break;
+      renderAPU(); renderBD(); notif('Insumo recuperado'); break;
     case 'editInsumo':
     case 'agregarInsumo':
       APU[a.datos.cod] = a.datos.insumosPrev;
       recalcDesdeAPU(a.datos.cod.replace('_','.'));
-      renderAPU(); renderBD(); notif('â†© Insumo revertido'); break;
+      renderAPU(); renderBD(); notif('Insumo revertido'); break;
     case 'limpiarPres':
-      PRESUPUESTO = a.datos.items; renderPres(); renderBD(); notif('â†© Presupuesto restaurado'); break;
+      PRESUPUESTO = a.datos.items; renderPres(); renderBD(); notif('Presupuesto restaurado'); break;
     case 'quitarPres':
-      PRESUPUESTO.push(a.datos.item); renderPres(); renderBD(); notif('â†© Partida devuelta'); break;
+      PRESUPUESTO.push(a.datos.item); renderPres(); renderBD(); notif('Partida devuelta'); break;
     case 'updQty':
       const item = PRESUPUESTO.find(x=>x.pid===a.datos.pid);
-      if(item){ item.qty=a.datos.prevQty; renderPres(); notif('â†© Cantidad revertida'); } break;
+      if(item){ item.qty=a.datos.prevQty; renderPres(); notif('Cantidad revertida'); } break;
   }
   marcarUnsaved(); actualizarBtnUndo();
 }
